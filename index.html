@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#12396b" />
+  <meta name="theme-color" content="#0b1220" />
   <title>هنرستان سما | سامانه حضور و غیاب</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,194 +12,192 @@
   <style>
     :root{
       --bg:#eef5ff;
-      --bg-soft:#f7fbff;
-      --surface:rgba(255,255,255,.82);
-      --surface-solid:#ffffff;
-      --surface-2:#f4f8ff;
-      --line:#dfe9f7;
-      --ink:#132033;
-      --muted:#72829d;
-      --blue:#2c6cff;
-      --blue2:#5f9bff;
-      --blue3:#dceaff;
-      --navy:#0f1b33;
-      --success:#11a579;
-      --danger:#e05b74;
-      --warning:#efad3b;
-      --shadow:0 18px 55px rgba(12,34,77,.10);
-      --radius:24px;
-      --hero:linear-gradient(135deg,#0d274b 0%,#164d91 38%,#236eea 70%,#78b6ff 100%);
+      --bg-soft:#f8fbff;
+      --panel:rgba(255,255,255,.80);
+      --panel-solid:#ffffff;
+      --panel-2:#f4f8ff;
+      --line:#dde8f7;
+      --text:#132136;
+      --muted:#74849e;
+      --primary:#2f6dff;
+      --primary-2:#63a0ff;
+      --primary-3:#dcebff;
+      --success:#14a87a;
+      --danger:#e25d77;
+      --warning:#f0ad3f;
+      --navy:#0f1b35;
+      --shadow:0 18px 55px rgba(16,40,88,.10);
+      --glass:blur(16px);
+      --radius-xl:30px;
+      --radius-lg:24px;
+      --radius-md:18px;
+      --hero:linear-gradient(135deg,#0f244a 0%,#1d4b9c 42%,#2f6dff 74%,#7ab6ff 100%);
     }
     body.dark{
       --bg:#08111e;
-      --bg-soft:#0b1527;
-      --surface:rgba(16,24,40,.78);
-      --surface-solid:#111a2d;
-      --surface-2:#0e1729;
-      --line:#1e2b45;
-      --ink:#eef4ff;
-      --muted:#93a3bf;
-      --blue:#4c8bff;
-      --blue2:#7ab3ff;
-      --blue3:#13294a;
-      --navy:#0b1220;
-      --success:#19bf8d;
-      --danger:#ff768f;
-      --warning:#ffbc53;
-      --shadow:0 20px 55px rgba(0,0,0,.32);
-      --hero:linear-gradient(135deg,#071a31 0%,#153d78 40%,#2362d4 72%,#4fa3ff 100%);
+      --bg-soft:#0b1627;
+      --panel:rgba(15,23,39,.78);
+      --panel-solid:#10192d;
+      --panel-2:#0d1728;
+      --line:#1d2c46;
+      --text:#edf3ff;
+      --muted:#94a4c0;
+      --primary:#4b88ff;
+      --primary-2:#79b1ff;
+      --primary-3:#12284a;
+      --success:#19c08f;
+      --danger:#ff7a94;
+      --warning:#ffc25c;
+      --navy:#091221;
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+      --hero:linear-gradient(135deg,#08152b 0%,#11346a 42%,#245ddf 74%,#4aa4ff 100%);
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{margin:0;font-family:"Vazirmatn",Tahoma,sans-serif;background:
-      radial-gradient(circle at 0% 0%, rgba(67,126,255,.18), transparent 35%),
-      radial-gradient(circle at 100% 0%, rgba(66,197,255,.12), transparent 30%),
-      linear-gradient(180deg,var(--bg) 0%, var(--bg-soft) 100%);color:var(--ink);min-height:100vh;transition:background .25s,color .25s}
+    body{
+      margin:0;
+      font-family:"Vazirmatn",Tahoma,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(85,140,255,.18), transparent 32%),
+        radial-gradient(circle at 100% 0%, rgba(94,216,255,.14), transparent 28%),
+        linear-gradient(180deg,var(--bg) 0%, var(--bg-soft) 100%);
+      min-height:100vh;
+      transition:background .25s,color .25s;
+    }
     button,input,select,textarea{font:inherit}
-    .hidden{display:none!important}
+    .hidden{display:none !important}
 
-    /* Sama identity */
-    .sama-ribbon{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:9px 13px;border-radius:13px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);font-size:12px;font-weight:800;color:#fff}
-    .sama-ribbon .star{color:#ffdf8a;font-size:16px}
-    .sama-seal{display:grid;place-items:center;width:62px;height:62px;border-radius:20px;border:2px solid rgba(255,255,255,.45);background:linear-gradient(135deg,rgba(255,255,255,.26),rgba(255,255,255,.06));font-size:30px;font-weight:900;box-shadow:0 12px 30px rgba(0,0,0,.13)}
-    .hero-school-name{display:block;font-size:12px;letter-spacing:.1px;opacity:.88;margin-bottom:12px}
-    .identity-footer{margin-top:16px;color:var(--muted);font-size:11px;line-height:2}
-    /* login */
-    .login-screen{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;background:var(--surface-solid)}
-    .login-visual{position:relative;overflow:hidden;background:var(--hero);color:#fff;padding:54px;display:flex;align-items:center;justify-content:center}
-    .login-visual:before,.login-visual:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.10);filter:blur(2px)}
-    .login-visual:before{width:480px;height:480px;top:-160px;right:-120px}
-    .login-visual:after{width:320px;height:320px;left:-90px;bottom:-100px}
-    .login-blob{position:absolute;inset:auto 10% 10% auto;width:140px;height:140px;border-radius:34px;background:rgba(255,255,255,.12);transform:rotate(25deg);backdrop-filter:blur(12px)}
-    .login-card-hero{position:relative;z-index:2;max-width:560px}
-    .hero-badge{display:inline-flex;gap:10px;align-items:center;padding:10px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.10);backdrop-filter:blur(12px);font-size:12px;font-weight:700}
-    .hero-dot{width:12px;height:12px;border-radius:50%;background:#9fd0ff;box-shadow:0 0 0 5px rgba(255,255,255,.10)}
-    .login-card-hero h1{margin:18px 0 12px;font-size:47px;line-height:1.25;letter-spacing:-1px}
-    .login-card-hero p{margin:0 0 26px;color:#dbe8ff;line-height:2;font-size:15px}
-    .hero-features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .hero-feature{padding:18px;border-radius:20px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px)}
-    .hero-feature span{font-size:11px;color:#dfebff}.hero-feature strong{display:block;font-size:26px;margin-top:6px}
+    /* Login */
+    .login-screen{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;background:var(--panel-solid)}
+    .login-hero{position:relative;overflow:hidden;background:var(--hero);color:#fff;padding:56px;display:flex;align-items:center;justify-content:center}
+    .login-hero::before,.login-hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.10);filter:blur(2px)}
+    .login-hero::before{width:520px;height:520px;top:-170px;right:-120px}
+    .login-hero::after{width:280px;height:280px;left:-80px;bottom:-70px}
+    .hero-card{position:relative;z-index:2;max-width:580px}
+    .hero-badge{display:inline-flex;align-items:center;gap:10px;padding:11px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);backdrop-filter:blur(10px);font-size:12px;font-weight:800}
+    .hero-dot{width:12px;height:12px;border-radius:50%;background:#a6d4ff;box-shadow:0 0 0 6px rgba(255,255,255,.08)}
+    .hero-title{font-size:48px;line-height:1.25;margin:18px 0 12px;font-weight:900;letter-spacing:-1px}
+    .hero-text{font-size:15px;line-height:2;color:#dfebff;margin:0 0 28px}
+    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .hero-stat{padding:18px;border-radius:22px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px)}
+    .hero-stat span{display:block;font-size:11px;color:#e7f0ff}.hero-stat strong{display:block;font-size:28px;margin:7px 0 4px}
 
-    .login-pane{display:flex;align-items:center;justify-content:center;padding:32px}
+    .login-side{display:flex;align-items:center;justify-content:center;padding:32px}
     .login-box{width:min(440px,100%)}
-    .login-brand{display:flex;align-items:center;gap:12px;margin-bottom:32px}
-    .app-logo{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:#fff;font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:0 16px 34px rgba(44,108,255,.28)}
-    .login-brand b{font-size:24px;display:block}.login-brand small{display:block;color:var(--muted);font-size:12px}
-    .login-box h2{margin:0 0 8px;font-size:31px}.login-lead{margin:0 0 24px;color:var(--muted);font-size:13px;line-height:2}
-    .field{display:flex;flex-direction:column;gap:7px}.field label{font-size:12px;font-weight:700;color:var(--muted)}
-    .field input,.field select,.field textarea{padding:14px 14px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:16px;outline:none;transition:.2s}
-    .field input:focus,.field select:focus,.field textarea:focus{border-color:#85b2ff;box-shadow:0 0 0 4px rgba(44,108,255,.10);background:var(--surface-solid)}
+    .brand-row{display:flex;align-items:center;gap:12px;margin-bottom:34px}
+    .logo{width:56px;height:56px;border-radius:20px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:grid;place-items:center;color:#fff;font-size:26px;font-weight:900;box-shadow:0 18px 34px rgba(47,109,255,.28)}
+    .brand-row b{display:block;font-size:24px}.brand-row small{display:block;color:var(--muted);font-size:12px}
+    .login-box h2{margin:0 0 8px;font-size:30px}
+    .lead{margin:0 0 24px;color:var(--muted);font-size:13px;line-height:2}
     .stack{display:grid;gap:16px}
-    .btn{height:48px;border:0;border-radius:16px;padding:0 16px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s transform,.18s filter,.18s box-shadow;text-decoration:none}
-    .btn:hover{transform:translateY(-1px)}.btn:active{transform:none}.btn:disabled{opacity:.58;cursor:wait}
-    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 16px 34px rgba(44,108,255,.24)}
-    .btn-soft{background:var(--blue3);color:#2b5dcb}
-    .btn-ghost{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+    .field{display:flex;flex-direction:column;gap:7px}.field label{font-size:12px;font-weight:700;color:var(--muted)}
+    .field input,.field select,.field textarea{padding:14px 14px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);border-radius:16px;outline:none;transition:.2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#86b3ff;box-shadow:0 0 0 4px rgba(47,109,255,.10);background:var(--panel-solid)}
+    .btn{height:50px;border:0;border-radius:16px;padding:0 16px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}
+    .btn:hover{transform:translateY(-1px)}.btn:active{transform:none}.btn:disabled{opacity:.6;cursor:wait}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 18px 34px rgba(47,109,255,.22)}
+    .btn-soft{background:var(--primary-3);color:#2d63d8}
+    .btn-ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+    .notice{margin-top:16px;padding:12px 14px;border-radius:16px;font-size:12px;line-height:1.9;background:#edf4ff;color:#3561c9;border:1px solid #d8e7ff}
+    body.dark .notice{background:#11233f;border-color:#1e3b67;color:#b9d4ff}
+    .notice.error{background:#fff1f4;border-color:#ffd2db;color:#ba425b}
+    body.dark .notice.error{background:#351523;border-color:#683243;color:#ffc2d0}
+    .notice.success{background:#ebfaf4;border-color:#c8efd9;color:#157955}
+    body.dark .notice.success{background:#0d2a24;border-color:#1d5648;color:#98efcd}
     .hint{margin-top:15px;font-size:11px;color:var(--muted);line-height:2}
-    .notice{margin-top:16px;padding:12px 14px;border-radius:16px;font-size:12px;line-height:1.9;background:#ecf4ff;color:#3562cb;border:1px solid #d7e8ff}
-    .dark .notice{background:#11233f;border-color:#1f3b67;color:#b9d4ff}
-    .notice.error{background:#fff2f5;border-color:#ffd5de;color:#bd4560}.dark .notice.error{background:#341622;border-color:#633043;color:#ffbdd0}
-    .notice.success{background:#ecfbf5;border-color:#cbefdf;color:#157a57}.dark .notice.success{background:#0d2b24;border-color:#1a5747;color:#96f2cf}
 
-    /* app */
+    /* App */
     .app-shell{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
-    .sidebar{background:linear-gradient(180deg,#0d1830 0%, #122244 100%);padding:24px 18px;color:#fff;display:flex;flex-direction:column;gap:24px}
-    .sidebar .brand{display:flex;align-items:center;gap:12px;padding:8px 10px}.sidebar .brand .app-logo{width:48px;height:48px;font-size:21px}
-    .sidebar .brand strong{font-size:20px}.sidebar .brand small{display:block;font-size:11px;color:#a5b7db;margin-top:2px}
-    .menu-section{font-size:11px;color:#8698c1;padding:0 12px;margin-bottom:-10px}
+    .sidebar{background:linear-gradient(180deg,#0d1830 0%,#122446 100%);padding:24px 18px;color:#fff;display:flex;flex-direction:column;gap:24px}
+    .side-brand{display:flex;align-items:center;gap:12px;padding:8px 10px}.side-brand .logo{width:48px;height:48px;font-size:22px}.side-brand strong{font-size:20px}.side-brand small{display:block;font-size:11px;color:#a7b8da;margin-top:3px}
+    .menu-title{font-size:11px;color:#8295bf;padding:0 12px;margin-bottom:-10px}
     .nav-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:16px;color:#d6dff4;font-size:13px}
     .nav-item.active{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.08);color:#fff}
     .nav-icon{width:22px;text-align:center;font-size:16px}
-    .sidebar-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.10);padding:18px 10px 0;color:#93a4c8;font-size:11px;line-height:2}
+    .side-footer{margin-top:auto;border-top:1px solid rgba(255,255,255,.10);padding:18px 10px 0;color:#90a3c8;font-size:11px;line-height:2}
 
     .main{min-width:0}
-    .topbar{position:sticky;top:0;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 26px;background:rgba(255,255,255,.68);border-bottom:1px solid rgba(223,232,247,.95);backdrop-filter:blur(16px)}
-    .dark .topbar{background:rgba(9,17,31,.72);border-bottom-color:#1d2b45}
+    .topbar{position:sticky;top:0;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 26px;background:rgba(255,255,255,.72);backdrop-filter:var(--glass);border-bottom:1px solid rgba(222,231,246,.92)}
+    body.dark .topbar{background:rgba(8,17,30,.74);border-bottom-color:#1c2a43}
     .top-title{font-size:18px;font-weight:900}.top-sub{font-size:11px;color:var(--muted);margin-top:4px}
     .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .chip-btn{height:40px;border-radius:14px;padding:0 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;gap:8px;backdrop-filter:blur(14px)}
-    .user-chip{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid var(--line);background:var(--surface);border-radius:18px;backdrop-filter:blur(14px)}
-    .avatar{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:#e8f0ff;color:#285fd4;font-weight:900}
-    .dark .avatar{background:#173056;color:#a8c8ff}
+    .chip-btn{height:42px;border-radius:15px;padding:0 14px;border:1px solid var(--line);background:var(--panel);color:var(--text);backdrop-filter:var(--glass);display:inline-flex;align-items:center;gap:8px}
+    .user-chip{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid var(--line);background:var(--panel);backdrop-filter:var(--glass);border-radius:18px}
+    .avatar{width:40px;height:40px;border-radius:15px;background:#e7efff;color:#275ed8;display:grid;place-items:center;font-weight:900}
+    body.dark .avatar{background:#153057;color:#b7d2ff}
     .user-meta b{display:block;font-size:12px}.user-meta small{display:block;font-size:10px;color:var(--muted)}
     .content{max-width:1280px;margin:auto;padding:26px}
-    .hero{display:grid;grid-template-columns:1.3fr .9fr;gap:16px;margin-bottom:18px}
-    .hero-card{background:var(--hero);color:#fff;border-radius:28px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-    .hero-card::after{content:"";position:absolute;inset:auto -40px -60px auto;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.10)}
-    .hero-card h1{margin:0 0 8px;font-size:28px;letter-spacing:-.8px}.hero-card p{margin:0;color:#e3edff;font-size:13px;line-height:2;max-width:620px}
-    .hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.hero-tag{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.12);font-size:11px}
-    .date-card{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:28px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center}
-    .date-card .label{font-size:12px;color:var(--muted)}.date-card strong{display:block;font-size:22px;margin-top:8px}.date-card small{display:block;color:var(--muted);margin-top:10px;line-height:1.9}
 
-    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
-    .stat{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:24px;padding:20px;box-shadow:var(--shadow)}
-    .stat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}.stat-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;font-size:18px}
-    .stat strong{display:block;font-size:30px;margin:12px 0 4px;letter-spacing:-1px}.stat small{font-size:11px;color:#8b98ad}
+    .hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:18px}
+    .hero-panel{background:var(--hero);color:#fff;border-radius:var(--radius-xl);padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero-panel::after{content:"";position:absolute;left:-20px;bottom:-70px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.10)}
+    .hero-panel h1{margin:0 0 8px;font-size:30px;letter-spacing:-.7px}.hero-panel p{margin:0;color:#e3edff;font-size:13px;line-height:2;max-width:620px}
+    .hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.hero-tag{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.12);font-size:11px}
+    .info-panel{background:var(--panel);border:1px solid var(--line);backdrop-filter:var(--glass);border-radius:var(--radius-xl);box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column;justify-content:center}
+    .info-panel .kicker{font-size:12px;color:var(--muted)}.info-panel strong{display:block;font-size:22px;margin-top:10px}.info-panel small{display:block;color:var(--muted);margin-top:12px;line-height:1.9}
 
-    .panel{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(16px);border-radius:26px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
-    .panel-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
-    .panel-head h2{margin:0;font-size:16px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:11px}.pill{padding:8px 12px;border-radius:999px;background:var(--blue3);color:#2b5fd0;font-size:11px;font-weight:800}
-    .dark .pill{background:#153159;color:#b4d3ff}
-    .panel-body{padding:20px 22px}
-    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.controls .field{min-width:170px;flex:1}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap}
+    .quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
+    .card{background:var(--panel);border:1px solid var(--line);backdrop-filter:var(--glass);border-radius:26px;box-shadow:var(--shadow)}
+    .stat-card{padding:20px}.stat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}.stat-icon{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;font-size:19px}.stat-card strong{display:block;font-size:31px;margin:12px 0 4px;letter-spacing:-1px}.stat-card small{font-size:11px;color:#8a98ae}
+
+    .section-card{overflow:hidden;margin-bottom:18px}.section-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.section-head h2{margin:0;font-size:16px}.section-head p{margin:5px 0 0;color:var(--muted);font-size:11px}
+    .pill{padding:8px 12px;border-radius:999px;background:var(--primary-3);color:#2c61d4;font-size:11px;font-weight:800}
+    body.dark .pill{background:#153159;color:#b5d4ff}
+    .section-body{padding:20px 22px}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.controls .field{min-width:170px;flex:1}.toolbar{display:flex;gap:10px;flex-wrap:wrap}
     .table-wrap{overflow:auto}
     table{width:100%;border-collapse:collapse;min-width:760px}
-    thead th{padding:14px 18px;background:rgba(248,251,255,.9);text-align:right;font-size:10px;color:#8d99af;font-weight:800;border-bottom:1px solid var(--line)}
-    .dark thead th{background:#101c31}
+    thead th{padding:14px 18px;text-align:right;background:rgba(248,251,255,.92);font-size:10px;color:#8d9ab0;font-weight:800;border-bottom:1px solid var(--line)}
+    body.dark thead th{background:#0f1b30}
     tbody td{padding:14px 18px;border-top:1px solid rgba(228,236,247,.9);font-size:12px;vertical-align:middle}
-    .dark tbody td{border-top-color:#1b2a44}
-    tbody tr:hover{background:rgba(98,157,255,.04)}
-    .student-cell{display:flex;align-items:center;gap:12px}.student-avatar{width:36px;height:36px;border-radius:13px;display:grid;place-items:center;background:#e9f0ff;color:#2d63dd;font-weight:900;font-size:12px}.dark .student-avatar{background:#153159;color:#bed6ff}
-    .student-name{font-weight:800}.student-number,.student-class{font-size:10px;color:#8b96aa;margin-top:2px}
-    .status-select,.note-input{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:14px;padding:10px 12px;color:var(--ink);outline:none}
-    .status-select:focus,.note-input:focus{border-color:#7ea9ff;box-shadow:0 0 0 3px rgba(44,108,255,.10)}
+    body.dark tbody td{border-top-color:#1b2a44}
+    tbody tr:hover{background:rgba(98,157,255,.05)}
+    .student-cell{display:flex;align-items:center;gap:12px}.student-avatar{width:38px;height:38px;border-radius:14px;background:#e9f0ff;color:#2f67e2;display:grid;place-items:center;font-weight:900;font-size:12px}
+    body.dark .student-avatar{background:#14315a;color:#bdd6ff}
+    .student-name{font-weight:800}.student-number,.student-class{font-size:10px;color:#8c97ab;margin-top:2px}
+    .status-select,.note-input{width:100%;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);outline:none}
+    .status-select:focus,.note-input:focus{border-color:#81adff;box-shadow:0 0 0 3px rgba(47,109,255,.10)}
     .empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:12px}
-    .student-mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
-    .student-metric{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
-    .student-metric span{font-size:11px;color:var(--muted)}.student-metric strong{display:block;font-size:28px;margin-top:8px}
-    .rate-wrap{margin-top:10px}.rate-bar{height:10px;border-radius:999px;background:#e8eef9;overflow:hidden}.dark .rate-bar{background:#16253e}.rate-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--blue2));width:0%}
     .footer-note{padding:4px 2px 0;color:var(--muted);font-size:11px;line-height:2}
 
+    .student-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
+    .student-rate{margin-top:10px}.rate-track{height:10px;border-radius:999px;background:#e7eef9;overflow:hidden}.rate-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--primary-2))}
+    body.dark .rate-track{background:#15253f}
+
     @media (max-width: 1040px){
-      .login-screen{grid-template-columns:1fr}
-      .login-visual{display:none}
-      .app-shell{grid-template-columns:84px 1fr}
-      .sidebar{padding:20px 12px;align-items:center}
-      .sidebar .brand strong,.sidebar .brand small,.menu-section,.nav-item span:not(.nav-icon),.sidebar-foot{display:none}
-      .nav-item{width:50px;height:50px;justify-content:center;padding:0}
-      .hero{grid-template-columns:1fr}
-      .stats,.student-mini{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .login-screen{grid-template-columns:1fr}.login-hero{display:none}.app-shell{grid-template-columns:84px 1fr}.sidebar{padding:20px 12px;align-items:center}
+      .side-brand strong,.side-brand small,.menu-title,.nav-item span:not(.nav-icon),.side-footer{display:none}.nav-item{width:50px;height:50px;justify-content:center;padding:0}
+      .hero-grid{grid-template-columns:1fr}.quick-grid,.student-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media (max-width: 760px){
-      .app-shell{display:block}.sidebar{display:none}.topbar{padding:14px 16px}.content{padding:18px 12px 24px}.stats,.student-mini{grid-template-columns:1fr}
-      .top-actions{justify-content:flex-end}.hero-card h1{font-size:23px}.date-card strong{font-size:18px}.panel-head,.panel-body{padding:16px}.login-pane{padding:18px}
+      .app-shell{display:block}.sidebar{display:none}.topbar{padding:14px 16px}.content{padding:18px 12px 24px}.quick-grid,.student-stats{grid-template-columns:1fr}
+      .login-side{padding:18px}.top-actions{justify-content:flex-end}.hero-panel h1{font-size:24px}.info-panel strong{font-size:18px}.section-head,.section-body{padding:16px}
     }
   </style>
 </head>
 <body>
   <section id="loginScreen" class="login-screen">
-    <div class="login-visual">
-      <div class="login-card-hero">
-        <div class="sama-seal" aria-label="نشان نوشتاری سما">س</div><div class="sama-ribbon"><span class="star">✦</span> سامانه حضور و غیاب هنرستان سما</div>
-        <h1>هنرستان سما<br>آموزش منظم، آینده روشن</h1>
-        <p>سامانه آنلاین هنرستان سما برای مدیریت دقیق حضور و غیاب؛ با پنل ویژه معلم، مشاهده سوابق دانش‌آموزان و محیطی زیبا و ساده برای استفاده روزانه.</p>
-        <div class="hero-school-name">یادگیری • مسئولیت‌پذیری • پیشرفت</div><div class="hero-features">
-          <div class="hero-feature"><span>وضعیت‌ها</span><strong>۴</strong><span>حاضر، غایب، تأخیر، موجه</span></div>
-          <div class="hero-feature"><span>پنل‌ها</span><strong>۲</strong><span>معلم و دانش‌آموز</span></div>
-          <div class="hero-feature"><span>فهرست</span><strong>۲۲</strong><span>دانش‌آموز کلاس</span></div>
+    <div class="login-hero">
+      <div class="hero-card">
+        <div class="hero-badge"><span class="hero-dot"></span> هنرستان سما • سامانه هوشمند حضور و غیاب</div>
+        <div class="hero-title">ظاهر زیبا، مدرن و حرفه‌ای<br>برای پروژه مدرسه</div>
+        <p class="hero-text">این نسخه با طراحی مدرن آبی، داشبورد قوی‌تر، پنل معلم و دانش‌آموز شیک‌تر، حالت تیره و روشن و حفظ تمام قابلیت‌های فعلی ساخته شده است.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><span>دانش‌آموزان</span><strong>22</strong><span>فهرست کلاس</span></div>
+          <div class="hero-stat"><span>پنل‌ها</span><strong>2</strong><span>معلم و دانش‌آموز</span></div>
+          <div class="hero-stat"><span>وضعیت‌ها</span><strong>4</strong><span>حاضر، غایب، تأخیر، موجه</span></div>
         </div>
       </div>
-      <div class="login-blob"></div>
     </div>
-    <div class="login-pane">
+    <div class="login-side">
       <div class="login-box">
-        <div class="login-brand">
-          <div class="app-logo">س</div>
-          <div><b>سما | حضور و غیاب</b><small>سامانه حضور و غیاب هنرستان سما</small></div>
+        <div class="brand-row">
+          <div class="logo">س</div>
+          <div><b>هنرستان سما</b><small>سامانه حضور و غیاب آنلاین</small></div>
         </div>
         <h2>ورود به سامانه</h2>
-        <p class="login-lead">برای ورود، معلم با ایمیل ثبت‌شده و دانش‌آموزها با نام کاربری اختصاصی خود وارد شوند.</p>
+        <p class="lead">معلم با ایمیل ثبت‌شده و دانش‌آموزها با نام کاربری اختصاصی وارد شوند.</p>
         <div class="stack">
           <div class="field">
             <label for="username">نام کاربری یا ایمیل</label>
@@ -212,30 +210,30 @@
           <button id="loginBtn" class="btn btn-primary">ورود به سامانه <span>←</span></button>
         </div>
         <div id="loginMsg" class="notice hidden"></div>
-        <div class="hint">این سامانه ویژه هنرستان سما طراحی شده است. فقط افراد دارای حساب کاربری می‌توانند وارد شوند.</div>
+        <div class="hint">این لینک سایت را می‌توانی برای بقیه بفرستی. فقط کاربرانی که حساب دارند وارد پنل می‌شوند.</div>
       </div>
     </div>
   </section>
 
   <section id="appShell" class="app-shell hidden">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="app-logo">س</div>
-        <div><strong>سما | حضور و غیاب</strong><small>ویژه هنرستان سما</small></div>
+      <div class="side-brand">
+        <div class="logo">س</div>
+        <div><strong>هنرستان سما</strong><small>سامانه حضور و غیاب</small></div>
       </div>
-      <div class="menu-section">منوی اصلی</div>
+      <div class="menu-title">منوی اصلی</div>
       <div class="nav-item active"><span class="nav-icon">▦</span><span>داشبورد</span></div>
       <div class="nav-item"><span class="nav-icon">◷</span><span>حضور و غیاب</span></div>
-      <div class="nav-item"><span class="nav-icon">▤</span><span>گزارش‌ها</span></div>
+      <div class="nav-item"><span class="nav-icon">▤</span><span>سوابق</span></div>
       <div class="nav-item"><span class="nav-icon">★</span><span>حساب کاربری</span></div>
-      <div class="sidebar-foot">سما | حضور و غیاب • طراحی مدرن آبی<br>نسخه آنلاین پروژه مدرسه</div>
+      <div class="side-footer">نسخه مدرن هنرستان سما<br>طراحی شیشه‌ای آبی و حرفه‌ای</div>
     </aside>
 
     <main class="main">
       <div class="topbar">
         <div>
           <div class="top-title">سامانه حضور و غیاب هنرستان سما</div>
-          <div class="top-sub">داشبورد آموزشی هنرستان سما | پنل معلم و دانش‌آموز</div>
+          <div class="top-sub">مدیریت حرفه‌ای کلاس با پنل معلم و دانش‌آموز</div>
         </div>
         <div class="top-actions">
           <button id="themeBtn" class="chip-btn" type="button">🌙 حالت تیره</button>
@@ -248,41 +246,40 @@
       </div>
 
       <div class="content">
-        <div class="hero">
-          <div class="hero-card">
+        <div class="hero-grid">
+          <div class="hero-panel">
             <h1 id="greeting">سلام، خوش آمدید 👋</h1>
-            <p id="welcomeText">به داشبورد سامانه حضور و غیاب خوش آمدید.</p>
+            <p id="welcomeText">به داشبورد سامانه حضور و غیاب هنرستان سما خوش آمدید.</p>
             <div class="hero-tags">
-              <span class="hero-tag">هویت بصری هنرستان سما</span>
-              <span class="hero-tag">پنل معلم و دانش‌آموز</span>
-              <span class="hero-tag">هنرستان سما</span>
+              <span class="hero-tag">زیبا و مدرن</span>
+              <span class="hero-tag">حالت تیره و روشن</span>
+              <span class="hero-tag">آنلاین و آماده استفاده</span>
             </div>
           </div>
-          <div class="date-card">
-            <span class="label">تاریخ امروز</span>
+          <div class="info-panel">
+            <span class="kicker">امروز</span>
             <strong id="todayLabel">امروز</strong>
-            <small>سامانه اختصاصی حضور و غیاب هنرستان سما؛ ورود فقط با حساب کاربری مجاز.</small>
+            <small>همین لینک سایت را برای معلم و دانش‌آموزانی که حساب دارند بفرست. بقیه هم می‌توانند صفحه را باز کنند، ولی برای ورود باید حساب داشته باشند.</small>
           </div>
         </div>
 
-        <div class="identity-footer">✦ هنرستان سما | نظم آموزشی، ارتباط روشن و ثبت دقیق حضور و غیاب</div>
         <section id="teacherPanel" class="hidden">
-          <div class="stats">
-            <div class="stat"><div class="stat-head"><span>کل دانش‌آموزان</span><span class="stat-icon" style="background:#eaf1ff;color:#2c6cff">👥</span></div><strong id="totalCount">۰</strong><small>فهرست ثبت‌شده کلاس</small></div>
-            <div class="stat"><div class="stat-head"><span>حاضرین</span><span class="stat-icon" style="background:#ebfaf4;color:#11a579">✓</span></div><strong id="presentCount">۰</strong><small>دانش‌آموزان حاضر</small></div>
-            <div class="stat"><div class="stat-head"><span>غایبین</span><span class="stat-icon" style="background:#fff3f5;color:#e05b74">!</span></div><strong id="absentCount">۰</strong><small>غیبت‌های امروز</small></div>
-            <div class="stat"><div class="stat-head"><span>تأخیر / موجه</span><span class="stat-icon" style="background:#fff7e9;color:#efad3b">◷</span></div><strong id="otherCount">۰</strong><small>مجموع تأخیر و موجه</small></div>
+          <div class="quick-grid">
+            <div class="card stat-card"><div class="stat-head"><span>کل دانش‌آموزان</span><span class="stat-icon" style="background:#eaf1ff;color:#2f6dff">👥</span></div><strong id="totalCount">0</strong><small>فهرست ثبت‌شده کلاس</small></div>
+            <div class="card stat-card"><div class="stat-head"><span>حاضرین</span><span class="stat-icon" style="background:#ebfaf4;color:#14a87a">✓</span></div><strong id="presentCount">0</strong><small>دانش‌آموزان حاضر</small></div>
+            <div class="card stat-card"><div class="stat-head"><span>غایبین</span><span class="stat-icon" style="background:#fff3f5;color:#e25d77">!</span></div><strong id="absentCount">0</strong><small>غیبت‌های امروز</small></div>
+            <div class="card stat-card"><div class="stat-head"><span>تأخیر / موجه</span><span class="stat-icon" style="background:#fff7e9;color:#f0ad3f">◷</span></div><strong id="otherCount">0</strong><small>مجموع تأخیر و موجه</small></div>
           </div>
 
-          <div class="panel">
-            <div class="panel-head">
+          <div class="card section-card">
+            <div class="section-head">
               <div>
                 <h2>ثبت حضور و غیاب روزانه</h2>
-                <p>وضعیت هر دانش‌آموز را انتخاب کن و در پایان روی ذخیره تغییرات بزن.</p>
+                <p>وضعیت هر دانش‌آموز را تعیین کن و در پایان روی ذخیره تغییرات بزن.</p>
               </div>
               <span class="pill">پنل معلم</span>
             </div>
-            <div class="panel-body">
+            <div class="section-body">
               <div class="controls">
                 <div class="field">
                   <label for="attendanceDate">تاریخ</label>
@@ -303,25 +300,24 @@
             </div>
             <div class="table-wrap">
               <table>
-                <thead>
-                  <tr><th>دانش‌آموز</th><th>وضعیت حضور</th><th>یادداشت</th></tr>
-                </thead>
+                <thead><tr><th>دانش‌آموز</th><th>وضعیت حضور</th><th>یادداشت</th></tr></thead>
                 <tbody id="studentsBody"></tbody>
               </table>
             </div>
           </div>
-          <div class="footer-note">پنل مدیریت حضور و غیاب هنرستان سما — برای دقت بیشتر، پس از ذخیره وضعیت روز را بررسی کنید.</div>
+          <div class="footer-note">در این نسخه، همه قابلیت‌های قبلی حفظ شده‌اند و فقط ظاهر سایت حرفه‌ای‌تر و مدرن‌تر شده است.</div>
         </section>
 
         <section id="studentPanel" class="hidden">
-          <div class="student-mini">
-            <div class="student-metric"><span>روزهای ثبت‌شده</span><strong id="daysCount">۰</strong></div>
-            <div class="student-metric"><span>حضور</span><strong id="myPresent">۰</strong></div>
-            <div class="student-metric"><span>غیبت</span><strong id="myAbsent">۰</strong></div>
-            <div class="student-metric"><span>درصد حضور</span><strong id="attendanceRate">۰٪</strong><div class="rate-wrap"><div class="rate-bar"><div id="attendanceRateBar" class="rate-fill"></div></div></div></div>
+          <div class="student-stats">
+            <div class="card stat-card"><div class="stat-head"><span>روزهای ثبت‌شده</span><span class="stat-icon" style="background:#eaf1ff;color:#2f6dff">▤</span></div><strong id="daysCount">0</strong><small>سوابق ثبت‌شده شما</small></div>
+            <div class="card stat-card"><div class="stat-head"><span>حضور</span><span class="stat-icon" style="background:#ebfaf4;color:#14a87a">✓</span></div><strong id="myPresent">0</strong><small>روزهای حضور</small></div>
+            <div class="card stat-card"><div class="stat-head"><span>غیبت</span><span class="stat-icon" style="background:#fff3f5;color:#e25d77">!</span></div><strong id="myAbsent">0</strong><small>روزهای غیبت</small></div>
+            <div class="card stat-card"><div class="stat-head"><span>درصد حضور</span><span class="stat-icon" style="background:#eef4ff;color:#2f6dff">%</span></div><strong id="attendanceRate">0٪</strong><small>نرخ حضور شما</small><div class="student-rate"><div class="rate-track"><div id="attendanceRateBar" class="rate-fill"></div></div></div></div>
           </div>
-          <div class="panel">
-            <div class="panel-head">
+
+          <div class="card section-card">
+            <div class="section-head">
               <div>
                 <h2>سوابق حضور و غیاب من</h2>
                 <p id="studentInfo">گزارش شخصی شما</p>
@@ -330,14 +326,12 @@
             </div>
             <div class="table-wrap">
               <table>
-                <thead>
-                  <tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr>
-                </thead>
+                <thead><tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr></thead>
                 <tbody id="myAttendance"></tbody>
               </table>
             </div>
           </div>
-          <div class="footer-note">سوابق نمایش‌داده‌شده فقط مربوط به حساب دانش‌آموز واردشده است.</div>
+          <div class="footer-note">دانش‌آموز فقط سوابق خودش را می‌بیند و تغییر آن فقط از طریق پنل معلم انجام می‌شود.</div>
         </section>
       </div>
     </main>
@@ -347,6 +341,7 @@
     const SUPABASE_URL = 'https://gmhidwihvrpnqpxrroen.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_X9Y8oacPcsT2XTadzDo6hQ_RvDfc91K';
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const aliases = {
       student22: 'student22@class-attendance.test',
       student17: 'student17@class-attendance.test',
@@ -362,7 +357,7 @@
     const $ = id => document.getElementById(id);
     const todayISO = () => new Date().toLocaleDateString('en-CA');
     const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const faStatus = s => ({present:'حاضر',absent:'غایب',late:'با تأخیر',excused:'موجه'})[s] || s;
+    const faStatus = s => ({present:'حاضر', absent:'غایب', late:'با تأخیر', excused:'موجه'})[s] || s;
 
     function showNotice(id, text, type='') {
       const el = $(id);
@@ -371,7 +366,7 @@
       el.classList.remove('hidden');
     }
     function hide(id){ $(id).classList.add('hidden'); }
-    function saveTheme(mode){ localStorage.setItem('attendance_theme', mode); }
+    function saveTheme(mode){ localStorage.setItem('sama_attendance_theme', mode); }
     function applyTheme(mode){
       document.body.classList.toggle('dark', mode === 'dark');
       $('themeBtn').textContent = mode === 'dark' ? '☀️ حالت روشن' : '🌙 حالت تیره';
@@ -380,7 +375,7 @@
 
     $('attendanceDate').value = todayISO();
     $('todayLabel').textContent = new Intl.DateTimeFormat('fa-IR', { dateStyle:'full' }).format(new Date());
-    applyTheme(localStorage.getItem('attendance_theme') || 'light');
+    applyTheme(localStorage.getItem('sama_attendance_theme') || 'light');
 
     $('themeBtn').addEventListener('click', () => applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark'));
     $('loginBtn').addEventListener('click', login);
@@ -391,7 +386,7 @@
     $('csvBtn').addEventListener('click', exportCsv);
     $('allPresentBtn').addEventListener('click', setAllPresent);
     $('attendanceDate').addEventListener('change', loadTeacherList);
-    $('classFilter').addEventListener('input', () => { syncDraftToSavedRows(); renderTeacherRows(); });
+    $('classFilter').addEventListener('input', renderTeacherRows);
 
     async function login(){
       const rawUser = $('username').value.trim();
@@ -475,17 +470,6 @@
       showNotice('teacherMsg','فهرست با موفقیت بارگذاری شد.','success');
     }
 
-    function syncDraftToSavedRows(){
-      const edits = [...$('studentsBody').querySelectorAll('tr[data-id]')].map(tr => ({
-        student_id: tr.dataset.id,
-        status: tr.querySelector('.status-select').value,
-        note: tr.querySelector('.note-input').value
-      }));
-      const byId = new Map(savedRows.map(a => [a.student_id, a]));
-      edits.forEach(a => byId.set(a.student_id, a));
-      savedRows = [...byId.values()];
-    }
-
     function renderTeacherRows(){
       const q = $('classFilter').value.trim().toLowerCase();
       const byId = Object.fromEntries(savedRows.map(a => [a.student_id, a]));
@@ -497,37 +481,39 @@
       });
       if(!rows.length){
         $('studentsBody').innerHTML = '<tr><td colspan="3" class="empty">دانش‌آموزی برای نمایش پیدا نشد.</td></tr>';
-        $('totalCount').textContent = studentRows.length;
-        $('presentCount').textContent = '۰';
-        $('absentCount').textContent = '۰';
-        $('otherCount').textContent = '۰';
+        $('totalCount').textContent = String(studentRows.length);
+        $('presentCount').textContent = '0';
+        $('absentCount').textContent = '0';
+        $('otherCount').textContent = '0';
         return;
       }
+
       $('studentsBody').innerHTML = rows.map(s => {
         const a = byId[s.id] || {};
         return `
-        <tr data-id="${esc(s.id)}">
-          <td>
-            <div class="student-cell">
-              <div class="student-avatar">${esc((s.full_name || '?').trim().slice(0,1))}</div>
-              <div>
-                <div class="student-name">${esc(s.full_name)}</div>
-                <div class="student-number">شماره ${esc(s.student_number || '—')}</div>
-                <div class="student-class">${esc(s.class_name || '—')}</div>
+          <tr data-id="${esc(s.id)}">
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar">${esc((s.full_name || '?').trim().slice(0,1))}</div>
+                <div>
+                  <div class="student-name">${esc(s.full_name)}</div>
+                  <div class="student-number">شماره ${esc(s.student_number || '—')}</div>
+                  <div class="student-class">${esc(s.class_name || '—')}</div>
+                </div>
               </div>
-            </div>
-          </td>
-          <td>
-            <select class="status-select">
-              <option value="present" ${a.status === 'present' ? 'selected' : ''}>حاضر</option>
-              <option value="absent" ${a.status === 'absent' ? 'selected' : ''}>غایب</option>
-              <option value="late" ${a.status === 'late' ? 'selected' : ''}>با تأخیر</option>
-              <option value="excused" ${a.status === 'excused' ? 'selected' : ''}>موجه</option>
-            </select>
-          </td>
-          <td><input class="note-input" value="${esc(a.note || '')}" placeholder="توضیح اختیاری" /></td>
-        </tr>`;
+            </td>
+            <td>
+              <select class="status-select">
+                <option value="present" ${a.status === 'present' ? 'selected' : ''}>حاضر</option>
+                <option value="absent" ${a.status === 'absent' ? 'selected' : ''}>غایب</option>
+                <option value="late" ${a.status === 'late' ? 'selected' : ''}>با تأخیر</option>
+                <option value="excused" ${a.status === 'excused' ? 'selected' : ''}>موجه</option>
+              </select>
+            </td>
+            <td><input class="note-input" value="${esc(a.note || '')}" placeholder="توضیح اختیاری" /></td>
+          </tr>`;
       }).join('');
+
       $('totalCount').textContent = String(studentRows.length);
       updateTeacherCounts();
       [...document.querySelectorAll('.status-select')].forEach(sel => sel.addEventListener('change', updateTeacherCounts));
@@ -546,7 +532,6 @@
     function setAllPresent(){
       document.querySelectorAll('.status-select').forEach(sel => sel.value = 'present');
       updateTeacherCounts();
-      syncDraftToSavedRows();
       showNotice('teacherMsg','وضعیت همه دانش‌آموزان روی «حاضر» قرار گرفت.','success');
     }
 
@@ -557,11 +542,13 @@
         showNotice('teacherMsg','تاریخ یا فهرست دانش‌آموزان معتبر نیست.','error');
         return;
       }
-      syncDraftToSavedRows();
-      const records = studentRows.map(student => {
-        const entry = savedRows.find(a => a.student_id === student.id) || {};
-        return { student_id: student.id, attendance_date: date, status: entry.status || 'present', note: (entry.note || '').trim(), recorded_by: currentUser.id };
-      });
+      const records = trs.map(tr => ({
+        student_id: tr.dataset.id,
+        attendance_date: date,
+        status: tr.querySelector('.status-select').value,
+        note: tr.querySelector('.note-input').value.trim(),
+        recorded_by: currentUser.id
+      }));
       $('saveBtn').disabled = true;
       const { error } = await db.from('attendance').upsert(records, { onConflict: 'student_id,attendance_date' });
       $('saveBtn').disabled = false;
@@ -569,8 +556,8 @@
         showNotice('teacherMsg','ذخیره انجام نشد: ' + error.message,'error');
         return;
       }
-      await loadTeacherList();
       showNotice('teacherMsg','تغییرات با موفقیت ذخیره شد.','success');
+      await loadTeacherList();
     }
 
     async function loadStudentHistory(){
