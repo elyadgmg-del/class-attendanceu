@@ -1,116 +1,638 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827">
-<title>حاضر | سامانه هوشمند حضور و غیاب</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#172033;--muted:#748096;--line:#e8edf5;--bg:#f4f6fb;--white:#fff;--navy:#111b35;--blue:#5269e8;--blue2:#7588ff;--mint:#17a982;--red:#e45b68;--amber:#e6a23c;--shadow:0 18px 50px rgba(30,48,90,.08)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Vazirmatn",Tahoma,sans-serif;min-height:100vh}
-button,input,select{font:inherit}button{cursor:pointer;border:0}
-.shell{min-height:100vh;display:grid;grid-template-columns:260px 1fr}
-.sidebar{background:var(--navy);color:#fff;padding:28px 18px;display:flex;flex-direction:column;gap:28px}
-.brand{display:flex;align-items:center;gap:12px;padding:0 8px}.brandmark{width:43px;height:43px;border-radius:14px;background:linear-gradient(135deg,#8291ff,#5366e8);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 20px #5269e855}.brand strong{font-size:19px;letter-spacing:-.5px}.brand small{display:block;color:#aab5d1;font-size:11px;margin-top:1px}
-.side-label{color:#7f8bab;font-size:11px;padding:0 12px;margin-bottom:-16px}.navitem{display:flex;align-items:center;gap:12px;color:#c5cde0;padding:12px 14px;border-radius:12px;font-size:13px}.navitem.active{background:#27365d;color:white}.navicon{font-size:17px;width:22px;text-align:center}.side-bottom{margin-top:auto;border-top:1px solid #ffffff17;padding:18px 8px 0;color:#8996b5;font-size:11px;line-height:2}
-.main{min-width:0}.topbar{height:76px;background:#ffffffd9;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;position:sticky;top:0;z-index:5}
-.top-title{font-weight:700;font-size:16px}.top-sub{font-size:11px;color:var(--muted);margin-top:2px}.user-chip{display:flex;align-items:center;gap:10px;background:#f7f8fc;border:1px solid var(--line);padding:7px 12px;border-radius:13px}.avatar{width:34px;height:34px;border-radius:11px;background:#e7eaff;color:#5269e8;display:grid;place-items:center;font-weight:800}.user-name{font-size:12px;font-weight:700}.user-role{font-size:10px;color:var(--muted)}
-.content{max-width:1220px;margin:auto;padding:30px 34px 50px}.welcome{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:24px}.welcome h1{font-size:25px;margin:0 0 5px;letter-spacing:-.8px}.welcome p{color:var(--muted);font-size:13px;margin:0}.date-tag{background:#fff;border:1px solid var(--line);padding:10px 14px;border-radius:12px;color:#5d6981;font-size:12px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:20px}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:19px 20px;box-shadow:0 5px 20px #26385b05}.stat-head{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}.stat-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:17px}.stat strong{font-size:27px;display:block;margin-top:9px;letter-spacing:-1px}.stat small{color:var(--muted);font-size:11px}
-.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 5px 20px #26385b05;margin-bottom:18px;overflow:hidden}.panel-head{padding:19px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.panel-head h2{font-size:15px;margin:0}.panel-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.panel-body{padding:20px 22px}
-.controls{display:flex;align-items:end;gap:11px;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:6px;min-width:170px}.field label{font-size:11px;color:#69758b}.field input,.field select{height:42px;border:1px solid #e1e6f0;background:#fbfcfe;border-radius:10px;padding:0 12px;color:var(--ink);outline:none;min-width:0}.field input:focus,.field select:focus{border-color:#7a89ee;box-shadow:0 0 0 3px #5269e817}
-.btn{height:42px;border-radius:10px;padding:0 16px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}.btn-primary{background:linear-gradient(135deg,var(--blue),#687df2);color:#fff;box-shadow:0 7px 16px #5269e82c}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 20px #5269e83c}.btn-soft{background:#eef1ff;color:#4b60d2}.btn-ghost{background:#f4f6fa;color:#5c6880}.btn:disabled{opacity:.55;cursor:wait}
-.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th{font-size:10px;color:#8993a6;font-weight:600;background:#fafbfe;text-align:right;padding:13px 20px}td{padding:11px 20px;border-top:1px solid #f0f2f7;font-size:12px}tbody tr:hover{background:#fbfcff}.student-cell{display:flex;align-items:center;gap:10px}.student-avatar{width:31px;height:31px;border-radius:10px;background:#edf0ff;color:#5269e8;display:grid;place-items:center;font-weight:700;font-size:11px}.student-name{font-weight:600}.student-number{font-size:10px;color:var(--muted);margin-top:2px}.status-select{border:1px solid #e3e8f0;background:#fff;border-radius:9px;padding:7px 9px;font-size:11px;min-width:116px;color:#344054}.note-input{border:1px solid #e3e8f0;border-radius:9px;padding:8px 10px;width:100%;min-width:120px;font-size:11px;outline:none}
-.notice{padding:11px 14px;border-radius:11px;font-size:12px;margin:14px 0 0;background:#eef2ff;color:#4057bd}.notice.error{background:#fff0f1;color:#b63845}.notice.success{background:#eaf8f2;color:#147753}.hidden{display:none!important}
-.login-screen{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;background:#fff}.login-art{background:radial-gradient(circle at 20% 15%,#5368e9 0,#293e9c 38%,#111b35 100%);color:white;display:flex;align-items:center;justify-content:center;padding:50px;position:relative;overflow:hidden}.login-art:before,.login-art:after{content:"";position:absolute;border:1px solid #ffffff18;border-radius:50%;width:440px;height:440px;right:-150px;top:-170px}.login-art:after{width:600px;height:600px;right:-230px;top:-250px}.art-inner{max-width:440px;position:relative;z-index:1}.art-symbol{width:74px;height:74px;border-radius:23px;background:#ffffff1b;border:1px solid #ffffff35;display:grid;place-items:center;font-size:34px;margin-bottom:28px}.login-art h1{font-size:35px;line-height:1.55;margin:0 0 12px}.login-art p{color:#cbd4f2;line-height:2;font-size:14px}.art-points{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}.art-points span{border:1px solid #ffffff2a;background:#ffffff0e;border-radius:30px;padding:8px 12px;font-size:11px;color:#e3e8ff}
-.login-side{display:flex;align-items:center;justify-content:center;padding:35px}.login-box{width:100%;max-width:390px}.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:42px}.login-brand .brandmark{width:39px;height:39px}.login-brand strong{font-size:17px}.login-box h2{font-size:25px;margin:0 0 7px}.login-box .lead{font-size:12px;color:var(--muted);margin:0 0 27px}.login-box .field{margin-bottom:16px}.login-box .field input{height:48px;font-size:13px}.login-box .btn{width:100%;height:48px;margin-top:8px;font-size:13px}.hint{font-size:10px;color:#9aa3b3;line-height:1.9;margin-top:18px}
-.student-history{display:grid;grid-template-columns:1fr 1fr;gap:15px}.history-card{border:1px solid var(--line);border-radius:14px;padding:17px}.history-card span{color:var(--muted);font-size:11px}.history-card strong{display:block;font-size:23px;margin-top:5px}
-.empty{text-align:center;padding:30px;color:var(--muted);font-size:12px}
-@media(max-width:900px){.shell{grid-template-columns:75px 1fr}.sidebar{padding:24px 10px;align-items:center}.brand{padding:0}.brand strong,.brand small,.side-label,.navitem span:not(.navicon),.side-bottom{display:none}.navitem{width:48px;height:48px;justify-content:center;padding:0}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:24px 20px}}
-@media(max-width:650px){.shell{display:block}.sidebar{display:none}.topbar{padding:0 16px;height:66px}.content{padding:22px 13px}.welcome{align-items:flex-start;flex-direction:column}.welcome h1{font-size:21px}.grid{gap:10px}.stat{padding:14px}.stat strong{font-size:23px}.panel-head,.panel-body{padding:15px}.login-screen{grid-template-columns:1fr}.login-art{display:none}.login-side{min-height:100vh;padding:25px}.login-brand{margin-bottom:38px}.student-history{grid-template-columns:1fr 1fr}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#12396b" />
+  <title>هنرستان سما | سامانه حضور و غیاب</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#eef5ff;
+      --bg-soft:#f7fbff;
+      --surface:rgba(255,255,255,.82);
+      --surface-solid:#ffffff;
+      --surface-2:#f4f8ff;
+      --line:#dfe9f7;
+      --ink:#132033;
+      --muted:#72829d;
+      --blue:#2c6cff;
+      --blue2:#5f9bff;
+      --blue3:#dceaff;
+      --navy:#0f1b33;
+      --success:#11a579;
+      --danger:#e05b74;
+      --warning:#efad3b;
+      --shadow:0 18px 55px rgba(12,34,77,.10);
+      --radius:24px;
+      --hero:linear-gradient(135deg,#0d274b 0%,#164d91 38%,#236eea 70%,#78b6ff 100%);
+    }
+    body.dark{
+      --bg:#08111e;
+      --bg-soft:#0b1527;
+      --surface:rgba(16,24,40,.78);
+      --surface-solid:#111a2d;
+      --surface-2:#0e1729;
+      --line:#1e2b45;
+      --ink:#eef4ff;
+      --muted:#93a3bf;
+      --blue:#4c8bff;
+      --blue2:#7ab3ff;
+      --blue3:#13294a;
+      --navy:#0b1220;
+      --success:#19bf8d;
+      --danger:#ff768f;
+      --warning:#ffbc53;
+      --shadow:0 20px 55px rgba(0,0,0,.32);
+      --hero:linear-gradient(135deg,#071a31 0%,#153d78 40%,#2362d4 72%,#4fa3ff 100%);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:"Vazirmatn",Tahoma,sans-serif;background:
+      radial-gradient(circle at 0% 0%, rgba(67,126,255,.18), transparent 35%),
+      radial-gradient(circle at 100% 0%, rgba(66,197,255,.12), transparent 30%),
+      linear-gradient(180deg,var(--bg) 0%, var(--bg-soft) 100%);color:var(--ink);min-height:100vh;transition:background .25s,color .25s}
+    button,input,select,textarea{font:inherit}
+    .hidden{display:none!important}
+
+    /* Sama identity */
+    .sama-ribbon{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:9px 13px;border-radius:13px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);font-size:12px;font-weight:800;color:#fff}
+    .sama-ribbon .star{color:#ffdf8a;font-size:16px}
+    .sama-seal{display:grid;place-items:center;width:62px;height:62px;border-radius:20px;border:2px solid rgba(255,255,255,.45);background:linear-gradient(135deg,rgba(255,255,255,.26),rgba(255,255,255,.06));font-size:30px;font-weight:900;box-shadow:0 12px 30px rgba(0,0,0,.13)}
+    .hero-school-name{display:block;font-size:12px;letter-spacing:.1px;opacity:.88;margin-bottom:12px}
+    .identity-footer{margin-top:16px;color:var(--muted);font-size:11px;line-height:2}
+    /* login */
+    .login-screen{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;background:var(--surface-solid)}
+    .login-visual{position:relative;overflow:hidden;background:var(--hero);color:#fff;padding:54px;display:flex;align-items:center;justify-content:center}
+    .login-visual:before,.login-visual:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.10);filter:blur(2px)}
+    .login-visual:before{width:480px;height:480px;top:-160px;right:-120px}
+    .login-visual:after{width:320px;height:320px;left:-90px;bottom:-100px}
+    .login-blob{position:absolute;inset:auto 10% 10% auto;width:140px;height:140px;border-radius:34px;background:rgba(255,255,255,.12);transform:rotate(25deg);backdrop-filter:blur(12px)}
+    .login-card-hero{position:relative;z-index:2;max-width:560px}
+    .hero-badge{display:inline-flex;gap:10px;align-items:center;padding:10px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.10);backdrop-filter:blur(12px);font-size:12px;font-weight:700}
+    .hero-dot{width:12px;height:12px;border-radius:50%;background:#9fd0ff;box-shadow:0 0 0 5px rgba(255,255,255,.10)}
+    .login-card-hero h1{margin:18px 0 12px;font-size:47px;line-height:1.25;letter-spacing:-1px}
+    .login-card-hero p{margin:0 0 26px;color:#dbe8ff;line-height:2;font-size:15px}
+    .hero-features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .hero-feature{padding:18px;border-radius:20px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px)}
+    .hero-feature span{font-size:11px;color:#dfebff}.hero-feature strong{display:block;font-size:26px;margin-top:6px}
+
+    .login-pane{display:flex;align-items:center;justify-content:center;padding:32px}
+    .login-box{width:min(440px,100%)}
+    .login-brand{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+    .app-logo{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:#fff;font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:0 16px 34px rgba(44,108,255,.28)}
+    .login-brand b{font-size:24px;display:block}.login-brand small{display:block;color:var(--muted);font-size:12px}
+    .login-box h2{margin:0 0 8px;font-size:31px}.login-lead{margin:0 0 24px;color:var(--muted);font-size:13px;line-height:2}
+    .field{display:flex;flex-direction:column;gap:7px}.field label{font-size:12px;font-weight:700;color:var(--muted)}
+    .field input,.field select,.field textarea{padding:14px 14px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:16px;outline:none;transition:.2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#85b2ff;box-shadow:0 0 0 4px rgba(44,108,255,.10);background:var(--surface-solid)}
+    .stack{display:grid;gap:16px}
+    .btn{height:48px;border:0;border-radius:16px;padding:0 16px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s transform,.18s filter,.18s box-shadow;text-decoration:none}
+    .btn:hover{transform:translateY(-1px)}.btn:active{transform:none}.btn:disabled{opacity:.58;cursor:wait}
+    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 16px 34px rgba(44,108,255,.24)}
+    .btn-soft{background:var(--blue3);color:#2b5dcb}
+    .btn-ghost{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+    .hint{margin-top:15px;font-size:11px;color:var(--muted);line-height:2}
+    .notice{margin-top:16px;padding:12px 14px;border-radius:16px;font-size:12px;line-height:1.9;background:#ecf4ff;color:#3562cb;border:1px solid #d7e8ff}
+    .dark .notice{background:#11233f;border-color:#1f3b67;color:#b9d4ff}
+    .notice.error{background:#fff2f5;border-color:#ffd5de;color:#bd4560}.dark .notice.error{background:#341622;border-color:#633043;color:#ffbdd0}
+    .notice.success{background:#ecfbf5;border-color:#cbefdf;color:#157a57}.dark .notice.success{background:#0d2b24;border-color:#1a5747;color:#96f2cf}
+
+    /* app */
+    .app-shell{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+    .sidebar{background:linear-gradient(180deg,#0d1830 0%, #122244 100%);padding:24px 18px;color:#fff;display:flex;flex-direction:column;gap:24px}
+    .sidebar .brand{display:flex;align-items:center;gap:12px;padding:8px 10px}.sidebar .brand .app-logo{width:48px;height:48px;font-size:21px}
+    .sidebar .brand strong{font-size:20px}.sidebar .brand small{display:block;font-size:11px;color:#a5b7db;margin-top:2px}
+    .menu-section{font-size:11px;color:#8698c1;padding:0 12px;margin-bottom:-10px}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:16px;color:#d6dff4;font-size:13px}
+    .nav-item.active{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.08);color:#fff}
+    .nav-icon{width:22px;text-align:center;font-size:16px}
+    .sidebar-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.10);padding:18px 10px 0;color:#93a4c8;font-size:11px;line-height:2}
+
+    .main{min-width:0}
+    .topbar{position:sticky;top:0;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 26px;background:rgba(255,255,255,.68);border-bottom:1px solid rgba(223,232,247,.95);backdrop-filter:blur(16px)}
+    .dark .topbar{background:rgba(9,17,31,.72);border-bottom-color:#1d2b45}
+    .top-title{font-size:18px;font-weight:900}.top-sub{font-size:11px;color:var(--muted);margin-top:4px}
+    .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .chip-btn{height:40px;border-radius:14px;padding:0 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;gap:8px;backdrop-filter:blur(14px)}
+    .user-chip{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid var(--line);background:var(--surface);border-radius:18px;backdrop-filter:blur(14px)}
+    .avatar{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:#e8f0ff;color:#285fd4;font-weight:900}
+    .dark .avatar{background:#173056;color:#a8c8ff}
+    .user-meta b{display:block;font-size:12px}.user-meta small{display:block;font-size:10px;color:var(--muted)}
+    .content{max-width:1280px;margin:auto;padding:26px}
+    .hero{display:grid;grid-template-columns:1.3fr .9fr;gap:16px;margin-bottom:18px}
+    .hero-card{background:var(--hero);color:#fff;border-radius:28px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero-card::after{content:"";position:absolute;inset:auto -40px -60px auto;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.10)}
+    .hero-card h1{margin:0 0 8px;font-size:28px;letter-spacing:-.8px}.hero-card p{margin:0;color:#e3edff;font-size:13px;line-height:2;max-width:620px}
+    .hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.hero-tag{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.12);font-size:11px}
+    .date-card{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:28px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center}
+    .date-card .label{font-size:12px;color:var(--muted)}.date-card strong{display:block;font-size:22px;margin-top:8px}.date-card small{display:block;color:var(--muted);margin-top:10px;line-height:1.9}
+
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
+    .stat{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:24px;padding:20px;box-shadow:var(--shadow)}
+    .stat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}.stat-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;font-size:18px}
+    .stat strong{display:block;font-size:30px;margin:12px 0 4px;letter-spacing:-1px}.stat small{font-size:11px;color:#8b98ad}
+
+    .panel{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(16px);border-radius:26px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+    .panel-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+    .panel-head h2{margin:0;font-size:16px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:11px}.pill{padding:8px 12px;border-radius:999px;background:var(--blue3);color:#2b5fd0;font-size:11px;font-weight:800}
+    .dark .pill{background:#153159;color:#b4d3ff}
+    .panel-body{padding:20px 22px}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.controls .field{min-width:170px;flex:1}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap}
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:760px}
+    thead th{padding:14px 18px;background:rgba(248,251,255,.9);text-align:right;font-size:10px;color:#8d99af;font-weight:800;border-bottom:1px solid var(--line)}
+    .dark thead th{background:#101c31}
+    tbody td{padding:14px 18px;border-top:1px solid rgba(228,236,247,.9);font-size:12px;vertical-align:middle}
+    .dark tbody td{border-top-color:#1b2a44}
+    tbody tr:hover{background:rgba(98,157,255,.04)}
+    .student-cell{display:flex;align-items:center;gap:12px}.student-avatar{width:36px;height:36px;border-radius:13px;display:grid;place-items:center;background:#e9f0ff;color:#2d63dd;font-weight:900;font-size:12px}.dark .student-avatar{background:#153159;color:#bed6ff}
+    .student-name{font-weight:800}.student-number,.student-class{font-size:10px;color:#8b96aa;margin-top:2px}
+    .status-select,.note-input{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:14px;padding:10px 12px;color:var(--ink);outline:none}
+    .status-select:focus,.note-input:focus{border-color:#7ea9ff;box-shadow:0 0 0 3px rgba(44,108,255,.10)}
+    .empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:12px}
+    .student-mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
+    .student-metric{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+    .student-metric span{font-size:11px;color:var(--muted)}.student-metric strong{display:block;font-size:28px;margin-top:8px}
+    .rate-wrap{margin-top:10px}.rate-bar{height:10px;border-radius:999px;background:#e8eef9;overflow:hidden}.dark .rate-bar{background:#16253e}.rate-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--blue2));width:0%}
+    .footer-note{padding:4px 2px 0;color:var(--muted);font-size:11px;line-height:2}
+
+    @media (max-width: 1040px){
+      .login-screen{grid-template-columns:1fr}
+      .login-visual{display:none}
+      .app-shell{grid-template-columns:84px 1fr}
+      .sidebar{padding:20px 12px;align-items:center}
+      .sidebar .brand strong,.sidebar .brand small,.menu-section,.nav-item span:not(.nav-icon),.sidebar-foot{display:none}
+      .nav-item{width:50px;height:50px;justify-content:center;padding:0}
+      .hero{grid-template-columns:1fr}
+      .stats,.student-mini{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width: 760px){
+      .app-shell{display:block}.sidebar{display:none}.topbar{padding:14px 16px}.content{padding:18px 12px 24px}.stats,.student-mini{grid-template-columns:1fr}
+      .top-actions{justify-content:flex-end}.hero-card h1{font-size:23px}.date-card strong{font-size:18px}.panel-head,.panel-body{padding:16px}.login-pane{padding:18px}
+    }
+  </style>
 </head>
 <body>
-<div id="loginScreen" class="login-screen">
- <section class="login-art"><div class="art-inner"><div class="art-symbol">✓</div><h1>حضور و غیاب،<br>ساده‌تر از همیشه.</h1><p>یک فضای منظم برای مدیریت کلاس، ثبت وضعیت روزانه و پیگیری سوابق حضور دانش‌آموزان.</p><div class="art-points"><span>✦ ثبت سریع حضور</span><span>✦ گزارش روزانه</span><span>✦ دسترسی شخصی</span></div></div></section>
- <section class="login-side"><div class="login-box"><div class="login-brand"><div class="brandmark">✓</div><strong>حاضر <span style="color:#8b96aa;font-weight:400">/ سامانه کلاس</span></strong></div><h2>خوش آمدید</h2><p class="lead">برای ورود، اطلاعات حساب خود را وارد کنید.</p>
- <div class="field"><label for="username">نام کاربری یا ایمیل</label><input id="username" autocomplete="username" placeholder="نام کاربری یا ایمیل"></div>
- <div class="field"><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" placeholder="رمز عبور"></div>
- <button id="loginBtn" class="btn btn-primary">ورود به سامانه <span>←</span></button><div id="loginMsg" class="notice hidden"></div>
- <p class="hint">دانش‌آموزان با نام کاربری اختصاصی و معلم با ایمیل ثبت‌شده وارد شوند. در صورت بروز مشکل، با مدیر سامانه تماس بگیرید.</p>
- </div></section>
-</div>
-<div id="appShell" class="shell hidden">
-<aside class="sidebar"><div class="brand"><div class="brandmark">✓</div><div><strong>حاضر</strong><small>سامانه مدیریت کلاس</small></div></div>
-<div class="side-label">منوی اصلی</div><div class="navitem active"><span class="navicon">▦</span><span>داشبورد</span></div><div class="navitem"><span class="navicon">◷</span><span>حضور و غیاب</span></div><div class="navitem"><span class="navicon">▤</span><span>گزارش‌ها</span></div>
-<div class="side-bottom">سامانه حضور و غیاب کلاس<br>نسخه ۱.۰</div></aside>
-<section class="main"><div class="topbar"><div><div class="top-title">داشبورد کلاس</div><div class="top-sub">مدیریت هوشمند حضور و غیاب</div></div><div class="user-chip"><div class="avatar">✓</div><div><div id="userName" class="user-name">کاربر</div><div id="userRole" class="user-role">حساب کاربری</div></div><button id="logoutBtn" class="btn btn-ghost" style="height:32px;padding:0 10px;margin-right:5px">خروج</button></div></div>
-<div class="content"><div class="welcome"><div><h1 id="greeting">سلام، خوش آمدید 👋</h1><p id="welcomeText">نمای کلی وضعیت کلاس شما</p></div><div class="date-tag" id="todayLabel">امروز</div></div>
-<div id="teacherPanel" class="hidden">
-<div class="grid">
-<div class="stat"><div class="stat-head"><span>تعداد دانش‌آموزان</span><span class="stat-icon" style="background:#edf0ff;color:#5269e8">♙</span></div><strong id="totalCount">—</strong><small>فهرست ثبت‌شده کلاس</small></div>
-<div class="stat"><div class="stat-head"><span>حاضرین امروز</span><span class="stat-icon" style="background:#e9f8f2;color:#17a982">✓</span></div><strong id="presentCount">—</strong><small>بر اساس وضعیت انتخاب‌شده</small></div>
-<div class="stat"><div class="stat-head"><span>غایبین امروز</span><span class="stat-icon" style="background:#fff0f1;color:#e45b68">!</span></div><strong id="absentCount">—</strong><small>بر اساس وضعیت انتخاب‌شده</small></div>
-</div>
-<div class="panel"><div class="panel-head"><div><h2>ثبت حضور و غیاب</h2><p>وضعیت هر دانش‌آموز را انتخاب و در پایان ذخیره کنید.</p></div><span class="pill">پنل معلم</span></div>
-<div class="panel-body"><div class="controls">
-<div class="field"><label for="attendanceDate">تاریخ</label><input id="attendanceDate" type="date"></div>
-<div class="field"><label for="classFilter">جست‌وجوی نام یا کلاس</label><input id="classFilter" placeholder="نام دانش‌آموز یا کلاس"></div>
-<button id="loadBtn" class="btn btn-soft">↻ بارگذاری</button><button id="saveBtn" class="btn btn-primary">✓ ذخیره تغییرات</button><button id="csvBtn" class="btn btn-ghost">↓ خروجی CSV</button>
-</div><div id="teacherMsg" class="notice hidden"></div></div>
-<div class="table-wrap"><table><thead><tr><th>دانش‌آموز</th><th>وضعیت حضور</th><th>یادداشت</th></tr></thead><tbody id="studentsBody"></tbody></table></div></div>
-</div>
-<div id="studentPanel" class="hidden"><div class="grid"><div class="stat"><div class="stat-head"><span>روزهای ثبت‌شده</span><span class="stat-icon" style="background:#edf0ff;color:#5269e8">▤</span></div><strong id="daysCount">—</strong><small>سوابق ثبت‌شده شما</small></div><div class="stat"><div class="stat-head"><span>حضور</span><span class="stat-icon" style="background:#e9f8f2;color:#17a982">✓</span></div><strong id="myPresent">—</strong><small>روزهای حضور</small></div><div class="stat"><div class="stat-head"><span>غیبت</span><span class="stat-icon" style="background:#fff0f1;color:#e45b68">!</span></div><strong id="myAbsent">—</strong><small>روزهای غیبت</small></div></div>
-<div class="panel"><div class="panel-head"><div><h2>سوابق حضور و غیاب من</h2><p id="studentInfo">گزارش شخصی شما</p></div><span class="pill">پنل دانش‌آموز</span></div><div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr></thead><tbody id="myAttendance"></tbody></table></div></div></div>
-</div></section></div>
-<script>
-const SUPABASE_URL="https://gmhidwihvrpnqpxrroen.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_X9Y8oacPcsT2XTadzDo6hQ_RvDfc91K";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const aliases={student22:"student22@class-attendance.test",student17:"student17@class-attendance.test",student18:"student18@class-attendance.test",student14:"student14@class-attendance.test"};
-let currentUser=null,currentProfile=null,studentRows=[],savedRows=[];
-const $=id=>document.getElementById(id);
-const today=()=>new Date().toLocaleDateString("en-CA");
-$("attendanceDate").value=today();
-$("todayLabel").textContent=new Intl.DateTimeFormat("fa-IR",{dateStyle:"full"}).format(new Date());
-function notice(id,text,type=""){const e=$(id);e.textContent=text;e.className="notice"+(type?" "+type:"");e.classList.remove("hidden")}
-function hide(id){$(id).classList.add("hidden")}
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function faStatus(s){return({present:"حاضر",absent:"غایب",late:"با تأخیر",excused:"موجه"})[s]||s}
-$("loginBtn").onclick=login;$("password").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-$("logoutBtn").onclick=logout;$("loadBtn").onclick=loadTeacherList;$("saveBtn").onclick=saveAttendance;$("csvBtn").onclick=exportCsv;
-$("attendanceDate").addEventListener("change",loadTeacherList);$("classFilter").addEventListener("input",renderTeacherRows);
-async function login(){let u=$("username").value.trim(),p=$("password").value;if(!u||!p){notice("loginMsg","نام کاربری و رمز عبور را وارد کنید.","error");return}
-let email=aliases[u.toLowerCase()]||u;$("loginBtn").disabled=true;hide("loginMsg");let {data,error}=await db.auth.signInWithPassword({email,password:p});$("loginBtn").disabled=false;
-if(error){notice("loginMsg","ورود ناموفق بود. نام کاربری و رمز عبور را بررسی کنید.","error");return}currentUser=data.user;await openApp()}
-async function openApp(){let {data:profile,error}=await db.from("profiles").select("id,full_name,role").eq("id",currentUser.id).maybeSingle();
-if(error||!profile){notice("loginMsg","پروفایل این حساب در جدول profiles پیدا نشد. مدیر سامانه باید آن را بررسی کند.","error");await db.auth.signOut();return}
-currentProfile=profile;$("loginScreen").classList.add("hidden");$("appShell").classList.remove("hidden");$("userName").textContent=profile.full_name||"کاربر";$("userRole").textContent=profile.role==="teacher"?"معلم":"دانش‌آموز";$("greeting").textContent="سلام، "+(profile.full_name||"خوش آمدید")+" 👋";
-if(profile.role==="teacher"){$("teacherPanel").classList.remove("hidden");$("studentPanel").classList.add("hidden");$("welcomeText").textContent="در این بخش می‌توانید حضور و غیاب کلاس را مدیریت کنید.";await loadTeacherList()}
-else if(profile.role==="student"){$("studentPanel").classList.remove("hidden");$("teacherPanel").classList.add("hidden");$("welcomeText").textContent="گزارش شخصی حضور و غیاب شما";await loadStudentHistory()}
-else{await logout();notice("loginMsg","نقش این حساب معتبر نیست.","error")}}
-async function logout(){await db.auth.signOut();currentUser=null;currentProfile=null;$("appShell").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("password").value=""}
-async function loadTeacherList(){notice("teacherMsg","در حال دریافت فهرست دانش‌آموزان…");let {data:students,error}=await db.from("students").select("id,student_number,full_name,class_name").order("student_number");
-if(error){notice("teacherMsg","خطا در دریافت فهرست: "+error.message,"error");return}studentRows=students||[];
-let {data:att,error:ae}=await db.from("attendance").select("student_id,status,note").eq("attendance_date",$("attendanceDate").value);
-if(ae){notice("teacherMsg","خطا در دریافت حضور و غیاب: "+ae.message,"error");return}savedRows=att||[];renderTeacherRows();notice("teacherMsg","فهرست با موفقیت بارگذاری شد.","success")}
-function renderTeacherRows(){let q=$("classFilter").value.trim().toLowerCase(),by=Object.fromEntries(savedRows.map(a=>[a.student_id,a]));
-let rows=studentRows.filter(s=>(s.full_name||"").toLowerCase().includes(q)||(s.class_name||"").toLowerCase().includes(q)||(s.student_number||"").toLowerCase().includes(q));
-$("studentsBody").innerHTML=rows.map(s=>{let a=by[s.id]||{};return `<tr data-id="${esc(s.id)}"><td><div class="student-cell"><div class="student-avatar">${esc((s.full_name||"?").trim().slice(0,1))}</div><div><div class="student-name">${esc(s.full_name)}</div><div class="student-number">شماره ${esc(s.student_number||"—")}</div></div></div></td><td><select class="status-select"><option value="present" ${a.status==="present"?"selected":""}>حاضر</option><option value="absent" ${a.status==="absent"?"selected":""}>غایب</option><option value="late" ${a.status==="late"?"selected":""}>با تأخیر</option><option value="excused" ${a.status==="excused"?"selected":""}>موجه</option></select></td><td><input class="note-input" value="${esc(a.note||"")}" placeholder="یادداشت اختیاری"></td></tr>`}).join("");
-$("totalCount").textContent=studentRows.length;updateCounts()}
-function updateCounts(){let trs=[...$("studentsBody").querySelectorAll("tr")];$("presentCount").textContent=trs.filter(t=>t.querySelector("select").value==="present").length;$("absentCount").textContent=trs.filter(t=>t.querySelector("select").value==="absent").length;trs.forEach(t=>t.querySelector("select").addEventListener("change",updateCounts))}
-async function saveAttendance(){let date=$("attendanceDate").value,trs=[...$("studentsBody").querySelectorAll("tr")];if(!date||!trs.length){notice("teacherMsg","تاریخ یا فهرست دانش‌آموزان معتبر نیست.","error");return}
-let records=trs.map(t=>({student_id:t.dataset.id,attendance_date:date,status:t.querySelector("select").value,note:t.querySelector(".note-input").value.trim(),recorded_by:currentUser.id}));
-$("saveBtn").disabled=true;let {error}=await db.from("attendance").upsert(records,{onConflict:"student_id,attendance_date"});$("saveBtn").disabled=false;
-if(error){notice("teacherMsg","ذخیره انجام نشد: "+error.message,"error");return}notice("teacherMsg","تغییرات با موفقیت ذخیره شد.","success");await loadTeacherList()}
-async function loadStudentHistory(){let {data:s,error}=await db.from("students").select("id,student_number,full_name,class_name").eq("user_id",currentUser.id).maybeSingle();if(error||!s){$("studentInfo").textContent="اطلاعات دانش‌آموز پیدا نشد؛ اتصال حساب بررسی شود.";return}
-$("studentInfo").textContent="شماره "+s.student_number+" · "+s.full_name;let {data,error:ae}=await db.from("attendance").select("attendance_date,status,note").eq("student_id",s.id).order("attendance_date",{ascending:false});
-if(ae){$("myAttendance").innerHTML=`<tr><td colspan="3">${esc(ae.message)}</td></tr>`;return}data=data||[];$("daysCount").textContent=data.length;$("myPresent").textContent=data.filter(x=>x.status==="present").length;$("myAbsent").textContent=data.filter(x=>x.status==="absent").length;
-$("myAttendance").innerHTML=data.map(a=>`<tr><td>${esc(a.attendance_date)}</td><td>${faStatus(a.status)}</td><td>${esc(a.note||"—")}</td></tr>`).join("")||'<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>'}
-function exportCsv(){let trs=[...$("studentsBody").querySelectorAll("tr")],rows=[["شماره","نام","وضعیت","یادداشت"],...trs.map(t=>[t.children[0].querySelector(".student-number").textContent,t.children[0].querySelector(".student-name").textContent,faStatus(t.querySelector("select").value),t.querySelector(".note-input").value])];let csv="\uFEFF"+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(",")).join("\r\n");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="hozor-ghiyab-"+$("attendanceDate").value+".csv";a.click();URL.revokeObjectURL(a.href)}
-</script>
-</body></html>
+  <section id="loginScreen" class="login-screen">
+    <div class="login-visual">
+      <div class="login-card-hero">
+        <div class="sama-seal" aria-label="نشان نوشتاری سما">س</div><div class="sama-ribbon"><span class="star">✦</span> سامانه حضور و غیاب هنرستان سما</div>
+        <h1>هنرستان سما<br>آموزش منظم، آینده روشن</h1>
+        <p>سامانه آنلاین هنرستان سما برای مدیریت دقیق حضور و غیاب؛ با پنل ویژه معلم، مشاهده سوابق دانش‌آموزان و محیطی زیبا و ساده برای استفاده روزانه.</p>
+        <div class="hero-school-name">یادگیری • مسئولیت‌پذیری • پیشرفت</div><div class="hero-features">
+          <div class="hero-feature"><span>وضعیت‌ها</span><strong>۴</strong><span>حاضر، غایب، تأخیر، موجه</span></div>
+          <div class="hero-feature"><span>پنل‌ها</span><strong>۲</strong><span>معلم و دانش‌آموز</span></div>
+          <div class="hero-feature"><span>فهرست</span><strong>۲۲</strong><span>دانش‌آموز کلاس</span></div>
+        </div>
+      </div>
+      <div class="login-blob"></div>
+    </div>
+    <div class="login-pane">
+      <div class="login-box">
+        <div class="login-brand">
+          <div class="app-logo">س</div>
+          <div><b>سما | حضور و غیاب</b><small>سامانه حضور و غیاب هنرستان سما</small></div>
+        </div>
+        <h2>ورود به سامانه</h2>
+        <p class="login-lead">برای ورود، معلم با ایمیل ثبت‌شده و دانش‌آموزها با نام کاربری اختصاصی خود وارد شوند.</p>
+        <div class="stack">
+          <div class="field">
+            <label for="username">نام کاربری یا ایمیل</label>
+            <input id="username" autocomplete="username" placeholder="مثلاً student22 یا ایمیل معلم" />
+          </div>
+          <div class="field">
+            <label for="password">رمز عبور</label>
+            <input id="password" type="password" autocomplete="current-password" placeholder="رمز عبور" />
+          </div>
+          <button id="loginBtn" class="btn btn-primary">ورود به سامانه <span>←</span></button>
+        </div>
+        <div id="loginMsg" class="notice hidden"></div>
+        <div class="hint">این سامانه ویژه هنرستان سما طراحی شده است. فقط افراد دارای حساب کاربری می‌توانند وارد شوند.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="app-logo">س</div>
+        <div><strong>سما | حضور و غیاب</strong><small>ویژه هنرستان سما</small></div>
+      </div>
+      <div class="menu-section">منوی اصلی</div>
+      <div class="nav-item active"><span class="nav-icon">▦</span><span>داشبورد</span></div>
+      <div class="nav-item"><span class="nav-icon">◷</span><span>حضور و غیاب</span></div>
+      <div class="nav-item"><span class="nav-icon">▤</span><span>گزارش‌ها</span></div>
+      <div class="nav-item"><span class="nav-icon">★</span><span>حساب کاربری</span></div>
+      <div class="sidebar-foot">سما | حضور و غیاب • طراحی مدرن آبی<br>نسخه آنلاین پروژه مدرسه</div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="top-title">سامانه حضور و غیاب هنرستان سما</div>
+          <div class="top-sub">داشبورد آموزشی هنرستان سما | پنل معلم و دانش‌آموز</div>
+        </div>
+        <div class="top-actions">
+          <button id="themeBtn" class="chip-btn" type="button">🌙 حالت تیره</button>
+          <div class="user-chip">
+            <div class="avatar">✓</div>
+            <div class="user-meta"><b id="userName">کاربر</b><small id="userRole">حساب کاربری</small></div>
+            <button id="logoutBtn" class="btn btn-ghost" style="height:40px;padding:0 12px">خروج</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="hero">
+          <div class="hero-card">
+            <h1 id="greeting">سلام، خوش آمدید 👋</h1>
+            <p id="welcomeText">به داشبورد سامانه حضور و غیاب خوش آمدید.</p>
+            <div class="hero-tags">
+              <span class="hero-tag">هویت بصری هنرستان سما</span>
+              <span class="hero-tag">پنل معلم و دانش‌آموز</span>
+              <span class="hero-tag">هنرستان سما</span>
+            </div>
+          </div>
+          <div class="date-card">
+            <span class="label">تاریخ امروز</span>
+            <strong id="todayLabel">امروز</strong>
+            <small>سامانه اختصاصی حضور و غیاب هنرستان سما؛ ورود فقط با حساب کاربری مجاز.</small>
+          </div>
+        </div>
+
+        <div class="identity-footer">✦ هنرستان سما | نظم آموزشی، ارتباط روشن و ثبت دقیق حضور و غیاب</div>
+        <section id="teacherPanel" class="hidden">
+          <div class="stats">
+            <div class="stat"><div class="stat-head"><span>کل دانش‌آموزان</span><span class="stat-icon" style="background:#eaf1ff;color:#2c6cff">👥</span></div><strong id="totalCount">۰</strong><small>فهرست ثبت‌شده کلاس</small></div>
+            <div class="stat"><div class="stat-head"><span>حاضرین</span><span class="stat-icon" style="background:#ebfaf4;color:#11a579">✓</span></div><strong id="presentCount">۰</strong><small>دانش‌آموزان حاضر</small></div>
+            <div class="stat"><div class="stat-head"><span>غایبین</span><span class="stat-icon" style="background:#fff3f5;color:#e05b74">!</span></div><strong id="absentCount">۰</strong><small>غیبت‌های امروز</small></div>
+            <div class="stat"><div class="stat-head"><span>تأخیر / موجه</span><span class="stat-icon" style="background:#fff7e9;color:#efad3b">◷</span></div><strong id="otherCount">۰</strong><small>مجموع تأخیر و موجه</small></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>ثبت حضور و غیاب روزانه</h2>
+                <p>وضعیت هر دانش‌آموز را انتخاب کن و در پایان روی ذخیره تغییرات بزن.</p>
+              </div>
+              <span class="pill">پنل معلم</span>
+            </div>
+            <div class="panel-body">
+              <div class="controls">
+                <div class="field">
+                  <label for="attendanceDate">تاریخ</label>
+                  <input id="attendanceDate" type="date" />
+                </div>
+                <div class="field">
+                  <label for="classFilter">جست‌وجوی نام، شماره یا کلاس</label>
+                  <input id="classFilter" placeholder="مثلاً الیاد، 22، یا کلاس دهم" />
+                </div>
+                <div class="toolbar">
+                  <button id="loadBtn" class="btn btn-soft" type="button">↻ بارگذاری</button>
+                  <button id="allPresentBtn" class="btn btn-ghost" type="button">همه حاضر</button>
+                  <button id="saveBtn" class="btn btn-primary" type="button">✓ ذخیره تغییرات</button>
+                  <button id="csvBtn" class="btn btn-ghost" type="button">↓ خروجی CSV</button>
+                </div>
+              </div>
+              <div id="teacherMsg" class="notice hidden"></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>دانش‌آموز</th><th>وضعیت حضور</th><th>یادداشت</th></tr>
+                </thead>
+                <tbody id="studentsBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="footer-note">پنل مدیریت حضور و غیاب هنرستان سما — برای دقت بیشتر، پس از ذخیره وضعیت روز را بررسی کنید.</div>
+        </section>
+
+        <section id="studentPanel" class="hidden">
+          <div class="student-mini">
+            <div class="student-metric"><span>روزهای ثبت‌شده</span><strong id="daysCount">۰</strong></div>
+            <div class="student-metric"><span>حضور</span><strong id="myPresent">۰</strong></div>
+            <div class="student-metric"><span>غیبت</span><strong id="myAbsent">۰</strong></div>
+            <div class="student-metric"><span>درصد حضور</span><strong id="attendanceRate">۰٪</strong><div class="rate-wrap"><div class="rate-bar"><div id="attendanceRateBar" class="rate-fill"></div></div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>سوابق حضور و غیاب من</h2>
+                <p id="studentInfo">گزارش شخصی شما</p>
+              </div>
+              <span class="pill">پنل دانش‌آموز</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr>
+                </thead>
+                <tbody id="myAttendance"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="footer-note">سوابق نمایش‌داده‌شده فقط مربوط به حساب دانش‌آموز واردشده است.</div>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <script>
+    const SUPABASE_URL = 'https://gmhidwihvrpnqpxrroen.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_X9Y8oacPcsT2XTadzDo6hQ_RvDfc91K';
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const aliases = {
+      student22: 'student22@class-attendance.test',
+      student17: 'student17@class-attendance.test',
+      student18: 'student18@class-attendance.test',
+      student14: 'student14@class-attendance.test'
+    };
+
+    let currentUser = null;
+    let currentProfile = null;
+    let studentRows = [];
+    let savedRows = [];
+
+    const $ = id => document.getElementById(id);
+    const todayISO = () => new Date().toLocaleDateString('en-CA');
+    const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const faStatus = s => ({present:'حاضر',absent:'غایب',late:'با تأخیر',excused:'موجه'})[s] || s;
+
+    function showNotice(id, text, type='') {
+      const el = $(id);
+      el.textContent = text;
+      el.className = 'notice' + (type ? ' ' + type : '');
+      el.classList.remove('hidden');
+    }
+    function hide(id){ $(id).classList.add('hidden'); }
+    function saveTheme(mode){ localStorage.setItem('attendance_theme', mode); }
+    function applyTheme(mode){
+      document.body.classList.toggle('dark', mode === 'dark');
+      $('themeBtn').textContent = mode === 'dark' ? '☀️ حالت روشن' : '🌙 حالت تیره';
+      saveTheme(mode);
+    }
+
+    $('attendanceDate').value = todayISO();
+    $('todayLabel').textContent = new Intl.DateTimeFormat('fa-IR', { dateStyle:'full' }).format(new Date());
+    applyTheme(localStorage.getItem('attendance_theme') || 'light');
+
+    $('themeBtn').addEventListener('click', () => applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark'));
+    $('loginBtn').addEventListener('click', login);
+    $('password').addEventListener('keydown', e => { if(e.key === 'Enter') login(); });
+    $('logoutBtn').addEventListener('click', logout);
+    $('loadBtn').addEventListener('click', loadTeacherList);
+    $('saveBtn').addEventListener('click', saveAttendance);
+    $('csvBtn').addEventListener('click', exportCsv);
+    $('allPresentBtn').addEventListener('click', setAllPresent);
+    $('attendanceDate').addEventListener('change', loadTeacherList);
+    $('classFilter').addEventListener('input', () => { syncDraftToSavedRows(); renderTeacherRows(); });
+
+    async function login(){
+      const rawUser = $('username').value.trim();
+      const password = $('password').value;
+      if(!rawUser || !password){
+        showNotice('loginMsg','نام کاربری و رمز عبور را وارد کنید.','error');
+        return;
+      }
+      const email = aliases[rawUser.toLowerCase()] || rawUser;
+      $('loginBtn').disabled = true;
+      hide('loginMsg');
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      $('loginBtn').disabled = false;
+      if(error){
+        showNotice('loginMsg','ورود ناموفق بود. نام کاربری و رمز عبور را بررسی کنید.','error');
+        return;
+      }
+      currentUser = data.user;
+      await openApp();
+    }
+
+    async function openApp(){
+      const { data: profile, error } = await db.from('profiles').select('id,full_name,role').eq('id', currentUser.id).maybeSingle();
+      if(error || !profile){
+        showNotice('loginMsg','پروفایل این حساب در جدول profiles پیدا نشد. مدیر سامانه باید آن را بررسی کند.','error');
+        await db.auth.signOut();
+        currentUser = null;
+        return;
+      }
+      currentProfile = profile;
+      $('loginScreen').classList.add('hidden');
+      $('appShell').classList.remove('hidden');
+      $('userName').textContent = profile.full_name || 'کاربر';
+      $('userRole').textContent = profile.role === 'teacher' ? 'معلم' : 'دانش‌آموز';
+      $('greeting').textContent = 'سلام، ' + (profile.full_name || 'خوش آمدید') + ' 👋';
+
+      if(profile.role === 'teacher'){
+        $('teacherPanel').classList.remove('hidden');
+        $('studentPanel').classList.add('hidden');
+        $('welcomeText').textContent = 'در این بخش می‌توانید حضور و غیاب روزانه کلاس را مدیریت کنید.';
+        await loadTeacherList();
+      } else if(profile.role === 'student'){
+        $('studentPanel').classList.remove('hidden');
+        $('teacherPanel').classList.add('hidden');
+        $('welcomeText').textContent = 'در این بخش سوابق شخصی حضور و غیاب خودت را می‌بینی.';
+        await loadStudentHistory();
+      } else {
+        await logout();
+        showNotice('loginMsg','نقش این حساب معتبر نیست.','error');
+      }
+    }
+
+    async function logout(){
+      await db.auth.signOut();
+      currentUser = null;
+      currentProfile = null;
+      $('appShell').classList.add('hidden');
+      $('loginScreen').classList.remove('hidden');
+      $('teacherPanel').classList.add('hidden');
+      $('studentPanel').classList.add('hidden');
+      $('password').value = '';
+      hide('loginMsg');
+      hide('teacherMsg');
+    }
+
+    async function loadTeacherList(){
+      showNotice('teacherMsg','در حال دریافت فهرست دانش‌آموزان...');
+      const { data: students, error } = await db.from('students').select('id,student_number,full_name,class_name').order('student_number');
+      if(error){
+        showNotice('teacherMsg','خطا در دریافت فهرست: ' + error.message,'error');
+        return;
+      }
+      studentRows = students || [];
+      const { data: att, error: attErr } = await db.from('attendance').select('student_id,status,note').eq('attendance_date', $('attendanceDate').value);
+      if(attErr){
+        showNotice('teacherMsg','خطا در دریافت حضور و غیاب: ' + attErr.message,'error');
+        return;
+      }
+      savedRows = att || [];
+      renderTeacherRows();
+      showNotice('teacherMsg','فهرست با موفقیت بارگذاری شد.','success');
+    }
+
+    function syncDraftToSavedRows(){
+      const edits = [...$('studentsBody').querySelectorAll('tr[data-id]')].map(tr => ({
+        student_id: tr.dataset.id,
+        status: tr.querySelector('.status-select').value,
+        note: tr.querySelector('.note-input').value
+      }));
+      const byId = new Map(savedRows.map(a => [a.student_id, a]));
+      edits.forEach(a => byId.set(a.student_id, a));
+      savedRows = [...byId.values()];
+    }
+
+    function renderTeacherRows(){
+      const q = $('classFilter').value.trim().toLowerCase();
+      const byId = Object.fromEntries(savedRows.map(a => [a.student_id, a]));
+      const rows = studentRows.filter(s => {
+        const name = (s.full_name || '').toLowerCase();
+        const cls = (s.class_name || '').toLowerCase();
+        const num = String(s.student_number || '').toLowerCase();
+        return !q || name.includes(q) || cls.includes(q) || num.includes(q);
+      });
+      if(!rows.length){
+        $('studentsBody').innerHTML = '<tr><td colspan="3" class="empty">دانش‌آموزی برای نمایش پیدا نشد.</td></tr>';
+        $('totalCount').textContent = studentRows.length;
+        $('presentCount').textContent = '۰';
+        $('absentCount').textContent = '۰';
+        $('otherCount').textContent = '۰';
+        return;
+      }
+      $('studentsBody').innerHTML = rows.map(s => {
+        const a = byId[s.id] || {};
+        return `
+        <tr data-id="${esc(s.id)}">
+          <td>
+            <div class="student-cell">
+              <div class="student-avatar">${esc((s.full_name || '?').trim().slice(0,1))}</div>
+              <div>
+                <div class="student-name">${esc(s.full_name)}</div>
+                <div class="student-number">شماره ${esc(s.student_number || '—')}</div>
+                <div class="student-class">${esc(s.class_name || '—')}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <select class="status-select">
+              <option value="present" ${a.status === 'present' ? 'selected' : ''}>حاضر</option>
+              <option value="absent" ${a.status === 'absent' ? 'selected' : ''}>غایب</option>
+              <option value="late" ${a.status === 'late' ? 'selected' : ''}>با تأخیر</option>
+              <option value="excused" ${a.status === 'excused' ? 'selected' : ''}>موجه</option>
+            </select>
+          </td>
+          <td><input class="note-input" value="${esc(a.note || '')}" placeholder="توضیح اختیاری" /></td>
+        </tr>`;
+      }).join('');
+      $('totalCount').textContent = String(studentRows.length);
+      updateTeacherCounts();
+      [...document.querySelectorAll('.status-select')].forEach(sel => sel.addEventListener('change', updateTeacherCounts));
+    }
+
+    function updateTeacherCounts(){
+      const selects = [...document.querySelectorAll('.status-select')];
+      const present = selects.filter(s => s.value === 'present').length;
+      const absent = selects.filter(s => s.value === 'absent').length;
+      const other = selects.filter(s => s.value === 'late' || s.value === 'excused').length;
+      $('presentCount').textContent = String(present);
+      $('absentCount').textContent = String(absent);
+      $('otherCount').textContent = String(other);
+    }
+
+    function setAllPresent(){
+      document.querySelectorAll('.status-select').forEach(sel => sel.value = 'present');
+      updateTeacherCounts();
+      syncDraftToSavedRows();
+      showNotice('teacherMsg','وضعیت همه دانش‌آموزان روی «حاضر» قرار گرفت.','success');
+    }
+
+    async function saveAttendance(){
+      const date = $('attendanceDate').value;
+      const trs = [...$('studentsBody').querySelectorAll('tr[data-id]')];
+      if(!date || !trs.length){
+        showNotice('teacherMsg','تاریخ یا فهرست دانش‌آموزان معتبر نیست.','error');
+        return;
+      }
+      syncDraftToSavedRows();
+      const records = studentRows.map(student => {
+        const entry = savedRows.find(a => a.student_id === student.id) || {};
+        return { student_id: student.id, attendance_date: date, status: entry.status || 'present', note: (entry.note || '').trim(), recorded_by: currentUser.id };
+      });
+      $('saveBtn').disabled = true;
+      const { error } = await db.from('attendance').upsert(records, { onConflict: 'student_id,attendance_date' });
+      $('saveBtn').disabled = false;
+      if(error){
+        showNotice('teacherMsg','ذخیره انجام نشد: ' + error.message,'error');
+        return;
+      }
+      await loadTeacherList();
+      showNotice('teacherMsg','تغییرات با موفقیت ذخیره شد.','success');
+    }
+
+    async function loadStudentHistory(){
+      const { data: student, error } = await db.from('students').select('id,student_number,full_name,class_name').eq('user_id', currentUser.id).maybeSingle();
+      if(error || !student){
+        $('studentInfo').textContent = 'اطلاعات دانش‌آموز پیدا نشد؛ اتصال user_id را بررسی کنید.';
+        $('myAttendance').innerHTML = '<tr><td colspan="3" class="empty">اطلاعات دانش‌آموزی برای این حساب پیدا نشد.</td></tr>';
+        return;
+      }
+      $('studentInfo').textContent = 'شماره ' + student.student_number + ' · ' + student.full_name + (student.class_name ? ' · ' + student.class_name : '');
+      const { data, error: attErr } = await db.from('attendance').select('attendance_date,status,note').eq('student_id', student.id).order('attendance_date', { ascending: false });
+      if(attErr){
+        $('myAttendance').innerHTML = `<tr><td colspan="3" class="empty">${esc(attErr.message)}</td></tr>`;
+        return;
+      }
+      const rows = data || [];
+      const present = rows.filter(x => x.status === 'present').length;
+      const absent = rows.filter(x => x.status === 'absent').length;
+      const rate = rows.length ? Math.round((present / rows.length) * 100) : 0;
+      $('daysCount').textContent = String(rows.length);
+      $('myPresent').textContent = String(present);
+      $('myAbsent').textContent = String(absent);
+      $('attendanceRate').textContent = rate + '٪';
+      $('attendanceRateBar').style.width = rate + '%';
+      $('myAttendance').innerHTML = rows.length ? rows.map(a => `
+        <tr>
+          <td>${esc(a.attendance_date)}</td>
+          <td>${faStatus(a.status)}</td>
+          <td>${esc(a.note || '—')}</td>
+        </tr>`).join('') : '<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>';
+    }
+
+    function exportCsv(){
+      const trs = [...$('studentsBody').querySelectorAll('tr[data-id]')];
+      if(!trs.length){
+        showNotice('teacherMsg','برای خروجی گرفتن، ابتدا فهرست دانش‌آموزان را بارگذاری کن.','error');
+        return;
+      }
+      const rows = [
+        ['شماره','نام','کلاس','وضعیت','یادداشت'],
+        ...trs.map(tr => [
+          tr.querySelector('.student-number').textContent.replace('شماره ', ''),
+          tr.querySelector('.student-name').textContent,
+          tr.querySelector('.student-class').textContent,
+          faStatus(tr.querySelector('.status-select').value),
+          tr.querySelector('.note-input').value
+        ])
+      ];
+      const csv = '\uFEFF' + rows.map(r => r.map(x => '"' + String(x).replace(/"/g,'""') + '"').join(',')).join('\r\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+      a.download = 'attendance-' + $('attendanceDate').value + '.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    db.auth.getSession().then(({ data }) => {
+      if(data.session){
+        currentUser = data.session.user;
+        openApp();
+      }
+    });
+  </script>
+</body>
+</html>
