@@ -1,398 +1,249 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0b1220" />
-  <title>هنرستان سما | سامانه حضور و غیاب شیشه‌ای</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#eaf4ff;
-      --bg2:#f7fbff;
-      --text:#132136;
-      --muted:#6f809a;
-      --line:rgba(255,255,255,.46);
-      --glass:rgba(255,255,255,.30);
-      --glass-strong:rgba(255,255,255,.42);
-      --glass-soft:rgba(255,255,255,.18);
-      --primary:#2e6cff;
-      --primary2:#70adff;
-      --primary3:#dcecff;
-      --navy:#0f1d38;
-      --success:#14a97c;
-      --danger:#e55d78;
-      --warning:#f1ad3b;
-      --shadow:0 18px 55px rgba(14,37,81,.12);
-      --blur:blur(18px);
-      --hero:linear-gradient(135deg,#102446 0%,#1c4d9f 42%,#2e6cff 74%,#89c1ff 100%);
-    }
-    body.dark{
-      --bg:#08111d;
-      --bg2:#0b1628;
-      --text:#edf4ff;
-      --muted:#98a8c3;
-      --line:rgba(255,255,255,.08);
-      --glass:rgba(17,28,46,.46);
-      --glass-strong:rgba(19,32,53,.68);
-      --glass-soft:rgba(255,255,255,.05);
-      --primary:#4c8aff;
-      --primary2:#83bbff;
-      --primary3:#132a4d;
-      --navy:#091221;
-      --success:#18bf8f;
-      --danger:#ff7894;
-      --warning:#ffc15a;
-      --shadow:0 18px 55px rgba(0,0,0,.38);
-      --hero:linear-gradient(135deg,#08172e 0%,#12356d 42%,#255fe0 74%,#4ea7ff 100%);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:"Vazirmatn",Tahoma,sans-serif;color:var(--text);background:
-      radial-gradient(circle at 0% 0%, rgba(89,142,255,.18), transparent 34%),
-      radial-gradient(circle at 100% 0%, rgba(75,213,255,.14), transparent 28%),
-      linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);min-height:100vh;transition:.25s}
-    button,input,select,textarea{font:inherit}
-    .hidden{display:none!important}
-    .glass{background:var(--glass);border:1px solid var(--line);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:var(--shadow)}
-    .glass-strong{background:var(--glass-strong);border:1px solid var(--line);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:var(--shadow)}
-    .glass-chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:var(--glass-soft);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:12px;font-weight:700}
-    .shine{background:linear-gradient(90deg,#fff,#d7e9ff 50%,#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
-    body.dark .shine{background:linear-gradient(90deg,#fff,#b7d4ff 50%,#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
-
-    /* login */
-    .login-screen{min-height:100vh;display:grid;grid-template-columns:1.08fr .92fr;background:transparent}
-    .login-hero{position:relative;overflow:hidden;background:var(--hero);color:#fff;padding:58px;display:flex;align-items:center;justify-content:center}
-    .login-hero::before,.login-hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12)}
-    .login-hero::before{width:540px;height:540px;top:-180px;right:-120px;filter:blur(6px)}
-    .login-hero::after{width:300px;height:300px;left:-90px;bottom:-80px;filter:blur(4px)}
-    .float-card{position:absolute;border-radius:28px;padding:16px 18px;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 15px 40px rgba(0,0,0,.12)}
-    .float-card.a{top:80px;left:55px}.float-card.b{bottom:75px;right:55px}
-    .hero-wrap{position:relative;z-index:2;max-width:590px}
-    .hero-wrap h1{font-size:50px;line-height:1.22;margin:18px 0 12px;font-weight:900;letter-spacing:-1px}
-    .hero-wrap p{font-size:15px;line-height:2;color:#e4eeff;margin:0 0 26px}
-    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .hero-stat{padding:18px;border-radius:24px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px)}
-    .hero-stat span{display:block;font-size:11px;color:#e7f0ff}.hero-stat strong{display:block;font-size:28px;margin:7px 0 5px}
-
-    .login-side{display:flex;align-items:center;justify-content:center;padding:30px}
-    .login-box{width:min(460px,100%);border-radius:34px;padding:28px}
-    .brand-row{display:flex;align-items:center;gap:12px;margin-bottom:26px}
-    .logo{width:60px;height:60px;border-radius:22px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:grid;place-items:center;color:#fff;font-size:28px;font-weight:900;box-shadow:0 18px 35px rgba(46,108,255,.28)}
-    .brand-row b{display:block;font-size:25px}.brand-row small{display:block;color:var(--muted);font-size:12px}
-    .login-box h2{margin:0 0 8px;font-size:31px}
-    .lead{margin:0 0 24px;color:var(--muted);font-size:13px;line-height:2}
-    .field{display:flex;flex-direction:column;gap:7px}.field label{font-size:12px;font-weight:700;color:var(--muted)}
-    .field input,.field select,.field textarea{padding:14px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.42);color:var(--text);outline:none;backdrop-filter:blur(12px)}
-    body.dark .field input,body.dark .field select,body.dark .field textarea{background:rgba(255,255,255,.04)}
-    .field input:focus,.field select:focus,.field textarea:focus{border-color:#8cb7ff;box-shadow:0 0 0 4px rgba(46,108,255,.10)}
-    .stack{display:grid;gap:16px}
-    .btn{height:50px;border:0;border-radius:16px;padding:0 16px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}
-    .btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.6;cursor:wait}
-    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 18px 34px rgba(46,108,255,.22)}
-    .btn-soft{background:rgba(111,171,255,.16);color:#295fd3;border:1px solid rgba(103,163,255,.18)}
-    .btn-ghost{background:rgba(255,255,255,.18);color:var(--muted);border:1px solid var(--line);backdrop-filter:blur(10px)}
-    body.dark .btn-ghost{background:rgba(255,255,255,.04)}
-    .notice{margin-top:16px;padding:12px 14px;border-radius:16px;font-size:12px;line-height:1.9}
-    .notice{background:rgba(224,239,255,.8);border:1px solid rgba(179,209,255,.8);color:#2d61ce}
-    body.dark .notice{background:rgba(17,35,63,.88);border-color:#21406e;color:#bad5ff}
-    .notice.error{background:rgba(255,236,242,.88);border-color:#ffd0db;color:#b8445d}
-    body.dark .notice.error{background:rgba(58,22,36,.88);border-color:#6c3245;color:#ffc5d3}
-    .notice.success{background:rgba(234,251,243,.9);border-color:#c7efd8;color:#157957}
-    body.dark .notice.success{background:rgba(13,43,36,.88);border-color:#1d5b4b;color:#98f2cf}
-    .hint{margin-top:15px;font-size:11px;color:var(--muted);line-height:2}
-
-    /* app */
-    .app-shell{display:grid;grid-template-columns:295px 1fr;min-height:100vh}
-    .sidebar{padding:24px 18px;color:#fff;background:linear-gradient(180deg,#0d1830 0%,#122446 100%)}
-    .side-shell{height:100%;border-radius:28px;padding:6px 0;display:flex;flex-direction:column;gap:24px}
-    .side-brand{display:flex;align-items:center;gap:12px;padding:8px 12px}.side-brand .logo{width:50px;height:50px;font-size:22px}.side-brand strong{font-size:20px}.side-brand small{display:block;font-size:11px;color:#abc0e3;margin-top:2px}
-    .menu-title{font-size:11px;color:#8ca0c8;padding:0 14px;margin-bottom:-10px}
-    .nav-item{display:flex;align-items:center;gap:12px;padding:14px 15px;border-radius:18px;color:#d8e1f6;font-size:13px;margin:0 8px}
-    .nav-item.active{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.10)}
-    .nav-icon{width:22px;text-align:center;font-size:16px}.side-footer{margin-top:auto;padding:18px 14px 0;border-top:1px solid rgba(255,255,255,.10);color:#97a9cc;font-size:11px;line-height:2}
-
-    .main{min-width:0}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;background:rgba(255,255,255,.58);border-bottom:1px solid rgba(255,255,255,.46);backdrop-filter:blur(16px)}
-    body.dark .topbar{background:rgba(8,17,29,.72);border-bottom-color:rgba(255,255,255,.07)}
-    .top-title{font-size:18px;font-weight:900}.top-sub{font-size:11px;color:var(--muted);margin-top:4px}.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .chip-btn{height:42px;border-radius:15px;padding:0 14px;border:1px solid var(--line);background:var(--glass);color:var(--text);backdrop-filter:blur(12px)}
-    .user-chip{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid var(--line);background:var(--glass);border-radius:18px;backdrop-filter:blur(12px)}
-    .avatar{width:40px;height:40px;border-radius:15px;background:#e7efff;color:#285fd6;display:grid;place-items:center;font-weight:900}
-    body.dark .avatar{background:#153159;color:#b7d2ff}
-    .user-meta b{display:block;font-size:12px}.user-meta small{display:block;font-size:10px;color:var(--muted)}
-    .content{max-width:1280px;margin:auto;padding:26px}
-
-    .hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:18px}
-    .hero-panel{border-radius:32px;padding:24px;position:relative;overflow:hidden;color:#fff;background:var(--hero);box-shadow:var(--shadow)}
-    .hero-panel::after{content:"";position:absolute;left:-30px;bottom:-85px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.10)}
-    .hero-panel h1{margin:0 0 10px;font-size:31px;letter-spacing:-.8px}.hero-panel p{margin:0;color:#e5eeff;font-size:13px;line-height:2}
-    .hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .hero-tag{padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);font-size:11px}
-    .info-panel{border-radius:32px;padding:22px}.info-panel .kicker{font-size:12px;color:var(--muted)}.info-panel strong{display:block;font-size:22px;margin-top:10px}.info-panel small{display:block;color:var(--muted);line-height:1.9;margin-top:12px}
-
-    .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
-    .card{border-radius:28px;padding:20px}
-    .stat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}.stat-icon{width:46px;height:46px;border-radius:18px;display:grid;place-items:center;font-size:19px;background:rgba(255,255,255,.26);border:1px solid rgba(255,255,255,.3)}
-    .card strong.big{display:block;font-size:32px;margin:12px 0 4px;letter-spacing:-1px}.card small{font-size:11px;color:#8a98ae}
-    body.dark .card small{color:#9fb0cc}
-
-    .section{border-radius:28px;overflow:hidden;margin-bottom:18px}.section-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.section-head h2{margin:0;font-size:16px}.section-head p{margin:5px 0 0;color:var(--muted);font-size:11px}
-    .pill{padding:8px 12px;border-radius:999px;background:rgba(110,172,255,.18);color:#2d61d6;border:1px solid rgba(110,172,255,.18);backdrop-filter:blur(10px);font-size:11px;font-weight:800}
-    body.dark .pill{background:#143158;color:#b7d4ff;border-color:#21446f}
-    .section-body{padding:20px 22px}
-    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.controls .field{min-width:170px;flex:1}.toolbar{display:flex;gap:10px;flex-wrap:wrap}
-
-    .table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}
-    thead th{padding:14px 18px;text-align:right;font-size:10px;color:#8e9ab0;font-weight:800;background:rgba(255,255,255,.20);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
-    tbody td{padding:14px 18px;border-top:1px solid rgba(223,232,245,.9);font-size:12px;vertical-align:middle}
-    body.dark tbody td{border-top-color:#20304a}
-    tbody tr:hover{background:rgba(98,157,255,.05)}
-    .student-cell{display:flex;align-items:center;gap:12px}.student-avatar{width:38px;height:38px;border-radius:15px;background:rgba(255,255,255,.4);display:grid;place-items:center;color:#2f67e2;font-weight:900;font-size:12px;border:1px solid rgba(255,255,255,.5);backdrop-filter:blur(10px)}
-    body.dark .student-avatar{background:rgba(255,255,255,.06);color:#bdd6ff;border-color:rgba(255,255,255,.08)}
-    .student-name{font-weight:800}.student-number,.student-class{font-size:10px;color:#8d97ab;margin-top:2px}
-    .status-select,.note-input{width:100%;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.26);backdrop-filter:blur(10px);color:var(--text);outline:none}
-    body.dark .status-select,body.dark .note-input{background:rgba(255,255,255,.04)}
-    .status-select:focus,.note-input:focus{border-color:#86b3ff;box-shadow:0 0 0 3px rgba(46,108,255,.10)}
-    .empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:12px}
-    .footer-note{padding:4px 2px 0;color:var(--muted);font-size:11px;line-height:2}
-
-    .rate-track{height:10px;border-radius:999px;background:rgba(255,255,255,.35);overflow:hidden;border:1px solid rgba(255,255,255,.3)}
-    body.dark .rate-track{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)}
-    .rate-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--primary2))}
-
-    @media (max-width:1040px){
-      .login-screen{grid-template-columns:1fr}.login-hero{display:none}.app-shell{grid-template-columns:84px 1fr}.sidebar{padding:20px 12px}.side-brand strong,.side-brand small,.menu-title,.nav-item span:not(.nav-icon),.side-footer{display:none}.nav-item{width:50px;height:50px;justify-content:center;padding:0}.hero-grid{grid-template-columns:1fr}.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-    @media (max-width:760px){
-      .app-shell{display:block}.sidebar{display:none}.topbar{padding:14px 16px}.content{padding:18px 12px 24px}.grid4{grid-template-columns:1fr}.login-side{padding:18px}.hero-panel h1{font-size:24px}.section-head,.section-body{padding:16px}
-    }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a1024">
+<title>هنرستان سما | سامانه حضور و غیاب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{color-scheme:dark;--bg:#090f21;--bg2:#0d1730;--glass:rgba(21,34,67,.62);--glass2:rgba(20,32,61,.8);--stroke:rgba(189,214,255,.12);--white:#f4f8ff;--soft:#a9bbdf;--dim:#7e91b6;--azure:#77b8ff;--indigo:#7a77ff;--teal:#58e0cc;--orange:#ffbe7c;--rose:#ff7fa7;--shadow:0 24px 70px rgba(0,0,0,.25)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--white);font-family:Vazirmatn,Tahoma,sans-serif;min-height:100vh;background:var(--bg)}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}.hidden{display:none!important}
+/* Atmospheric background */
+.scene{position:fixed;z-index:0;inset:0;background:radial-gradient(ellipse 60% 50% at 12% 8%,rgba(88,80,231,.22),transparent 75%),radial-gradient(ellipse 50% 48% at 97% 64%,rgba(23,157,203,.16),transparent 75%),linear-gradient(128deg,#080e1f 3%,#101a35 62%,#081326 100%);pointer-events:none}
+.scene:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(151,180,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(151,180,255,.045) 1px,transparent 1px);background-size:55px 55px;mask-image:linear-gradient(to bottom,#000 0%,transparent 95%)}
+.login,.shell{position:relative;z-index:1}.orb{position:absolute;border-radius:50%;filter:blur(3px);opacity:.65}.orb-a{width:410px;height:410px;right:-180px;top:5%;background:radial-gradient(circle,rgba(93,117,255,.2),transparent 70%)}.orb-b{width:420px;height:420px;left:-210px;bottom:4%;background:radial-gradient(circle,rgba(48,218,215,.14),transparent 70%)}
+.glass{background:var(--glass);border:1px solid var(--stroke);box-shadow:var(--shadow);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.gradient-text{background:linear-gradient(95deg,#e2faff 5%,#92caff 52%,#b2aaff 96%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.muted{color:var(--soft)}.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}.icon-md{width:24px;height:24px}.icon-lg{width:32px;height:32px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:45px;padding:10px 17px;border-radius:14px;font-weight:800;font-size:12px;transition:.2s;outline:none;border:1px solid transparent;white-space:nowrap}
+.btn:hover:not(:disabled){transform:translateY(-2px)}.btn:focus-visible{outline:3px solid rgba(119,184,255,.6);outline-offset:2px}.btn-primary{color:#06122b;background:linear-gradient(105deg,#91d4ff,#8d9fff);box-shadow:0 12px 30px rgba(107,151,255,.22)}.btn-primary:hover{box-shadow:0 16px 35px rgba(107,151,255,.30)}
+.btn-secondary{color:#dceaff;background:rgba(255,255,255,.055);border-color:var(--stroke)}.btn-secondary:hover{background:rgba(255,255,255,.10)}.btn-teal{color:#062923;background:linear-gradient(100deg,#7ae8d3,#52cdb9)}
+.field label{display:block;color:var(--soft);font-size:12px;margin-bottom:9px;font-weight:600}.field input,.field select,.field textarea{display:block;width:100%;border:1px solid rgba(188,216,255,.17);border-radius:14px;outline:none;background:rgba(6,16,36,.36);color:#fff;padding:13px 15px;min-height:46px;transition:.2s}
+.field input::placeholder,.field textarea::placeholder{color:#7186ad}.field input:focus,.field select:focus,.field textarea:focus{border-color:#7bbaff;box-shadow:0 0 0 3px rgba(90,155,255,.13)}.field select option{background:#12213f;color:#fff}input[type=date]{color-scheme:dark}
+.notice{padding:12px 15px;border-radius:14px;font-size:12px;line-height:2;background:rgba(77,139,224,.12);color:#aed4ff;border:1px solid rgba(89,156,251,.24)}.notice.success{background:rgba(56,202,149,.1);border-color:rgba(71,216,166,.25);color:#7af0c7}.notice.error{background:rgba(238,78,119,.10);border-color:rgba(255,111,154,.25);color:#ffacc4}
+/* Login - completely new composition */
+.login{min-height:100vh;display:grid;grid-template-columns:minmax(390px,.95fr) minmax(0,1.05fr);position:relative;isolation:isolate}
+.login-form-panel{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:44px clamp(20px,5vw,92px);position:relative;background:rgba(5,12,27,.36);border-left:1px solid var(--stroke)}
+.login-form{max-width:440px;width:100%;animation:rise .55s both}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(145,193,255,.18);padding:8px 13px;border-radius:100px;background:rgba(109,157,255,.08);color:#a6c8f5;font-size:10px;font-weight:700;letter-spacing:.2px}
+.logo-row{display:flex;gap:14px;align-items:center;margin:0 0 50px}.logo-mark{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(124,171,255,.32),rgba(66,210,215,.23));border:1px solid rgba(183,217,255,.29);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 10px 30px rgba(45,123,214,.18);color:#d7f4ff;font-size:27px;font-weight:900}
+.logo-row strong{display:block;font-size:21px;letter-spacing:-.4px}.logo-row small{font-size:11px;color:var(--dim)}
+.login-form h1{font-size:clamp(28px,3vw,38px);margin:16px 0 10px;line-height:1.5;letter-spacing:-.5px}.login-form .desc{font-size:13px;line-height:2.2;color:var(--soft);margin:0 0 27px}
+.form-stack{display:grid;gap:19px}.form-stack .btn{width:100%;margin-top:8px;min-height:54px;font-size:14px}.login-small{margin-top:30px;font-size:11px;line-height:2;color:var(--dim)}
+.login-showcase{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:52px 50px}
+.showcase-main{position:relative;width:min(590px,100%);z-index:2;animation:rise .8s .12s both}
+.showcase-badge{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(140,200,255,.25);background:rgba(89,153,255,.14);border-radius:999px;color:#c1e0ff;padding:9px 15px;font-size:12px}
+.shine-dot{width:8px;height:8px;border-radius:50%;background:#72e9d7;box-shadow:0 0 12px #72e9d7}
+.showcase-main h2{font-size:clamp(34px,4.2vw,64px);line-height:1.45;margin:20px 0 16px;letter-spacing:-1.5px}.showcase-main p{font-size:14px;line-height:2.3;color:#b1c4e7;max-width:510px}
+.showcase-ui{margin-top:42px;padding:22px;border-radius:25px;transform:rotate(-1.5deg);background:linear-gradient(125deg,rgba(70,104,170,.28),rgba(32,52,101,.42));box-shadow:0 24px 80px rgba(0,0,0,.22);border:1px solid rgba(173,212,255,.17);backdrop-filter:blur(16px)}
+.showcase-ui-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.showcase-ui-head strong{font-size:13px}.showcase-dots{display:flex;gap:6px;direction:ltr}.showcase-dots span{width:8px;height:8px;background:rgba(255,255,255,.22);border-radius:50%}.showcase-dots span:first-child{background:#77e4cf}
+.showcase-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.showcase-stat{padding:18px 15px;background:rgba(8,20,44,.4);border:1px solid rgba(160,204,255,.1);border-radius:17px}.showcase-stat span{display:block;font-size:10px;color:#aac4e9}.showcase-stat b{display:block;font-size:24px;margin:9px 0 0}.showcase-stat:nth-child(2) b{color:#79e6bf}.showcase-stat:nth-child(3) b{color:#ffabbd}
+.showcase-bar{height:11px;border-radius:20px;margin-top:20px;overflow:hidden;background:#243856;display:flex;direction:ltr}.showcase-bar span:nth-child(1){width:66%;background:#63ddc7}.showcase-bar span:nth-child(2){width:20%;background:#718aff}.showcase-bar span:nth-child(3){width:14%;background:#ff849e}
+.showcase-note{margin-top:15px;display:flex;gap:8px;align-items:center;color:#a9c0e6;font-size:10px}
+/* Dashboard */
+.shell{display:grid;grid-template-columns:254px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;padding:27px 17px;display:flex;flex-direction:column;background:rgba(7,14,32,.66);border-left:1px solid var(--stroke);backdrop-filter:blur(20px)}
+.sidebar .logo-row{margin:0 4px 44px}.sidebar .logo-mark{width:46px;height:46px;font-size:23px;border-radius:15px}.sidebar .logo-row strong{font-size:18px}
+.side-label{font-size:10px;color:#6f85ad;letter-spacing:.5px;margin:0 14px 13px}.side-link{display:flex;gap:13px;align-items:center;padding:14px 16px;margin-bottom:7px;border-radius:14px;font-size:12px;color:#91a9d0}.side-link.active{background:linear-gradient(100deg,rgba(79,134,233,.25),rgba(79,134,233,.07));border:1px solid rgba(112,172,255,.18);color:#dcefff;font-weight:700}.side-link .icon{width:18px;height:18px}
+.sidebar-bottom{margin-top:auto}.school-info{padding:18px;border-radius:18px;background:linear-gradient(140deg,rgba(108,128,255,.17),rgba(74,204,222,.08));border:1px solid rgba(143,197,255,.12)}.school-info b{font-size:12px}.school-info p{font-size:10px;line-height:2;color:#89a0c9;margin:8px 0 0}
+.main{min-width:0}.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:21px clamp(20px,3vw,48px);border-bottom:1px solid var(--stroke);background:rgba(8,16,35,.46);backdrop-filter:blur(12px)}.topbar h1{font-size:16px;margin:0}.topbar p{font-size:10px;color:#7e94ba;margin:3px 0 0}.top-actions{display:flex;align-items:center;gap:9px}.user-chip{display:flex;align-items:center;gap:10px;padding:5px 11px 5px 6px;border:1px solid var(--stroke);border-radius:15px;background:rgba(255,255,255,.035)}.avatar{width:35px;height:35px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#6187e4,#4dccc2);color:#06152c;font-weight:900}.user-chip b{font-size:11px;display:block}.user-chip small{font-size:9px;color:#7e94b8}
+.icon-button{border:1px solid var(--stroke);border-radius:13px;display:grid;place-items:center;width:41px;height:41px;color:#acc5eb;background:rgba(255,255,255,.04)}
+.content{padding:32px clamp(18px,3vw,47px) 50px;max-width:1580px;margin:auto}.dash-hero{display:flex;gap:20px;align-items:center;justify-content:space-between;margin-bottom:27px}.dash-hero .kicker{font-size:11px;color:#79deb8}.dash-hero h2{margin:4px 0 6px;font-size:clamp(23px,2.6vw,31px);font-weight:900}.dash-hero p{margin:0;color:#96a9ce;font-size:12px}.date-badge{color:#b6cafa;display:flex;align-items:center;gap:10px;font-size:12px;background:rgba(255,255,255,.045);border:1px solid var(--stroke);border-radius:14px;padding:12px 14px}
+.overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:25px}.stat-card{border-radius:22px;padding:21px;min-width:0;position:relative;overflow:hidden;transition:.3s}.stat-card:hover{transform:translateY(-3px);border-color:rgba(142,190,255,.3)}.stat-card:before{content:"";position:absolute;width:150px;height:150px;top:-95px;left:-35px;background:radial-gradient(circle,var(--glow),transparent 70%);pointer-events:none}.stat-card .overline{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#a7b9db;font-size:11px}.stat-card .symbol{width:39px;height:39px;border-radius:13px;background:var(--icon-bg);color:var(--icon-color);display:grid;place-items:center}.stat-card .value{font-size:31px;font-weight:900;display:block;line-height:1.35;margin-top:16px}.stat-card .footnote{display:block;font-size:10px;color:#7389b0;margin-top:7px}
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px;align-items:start}.panel{border-radius:24px;min-width:0;overflow:hidden}.panel-header{padding:22px 24px;border-bottom:1px solid var(--stroke);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-header h3{font-size:15px;margin:0 0 5px}.panel-header p{color:#7e96bf;font-size:11px;line-height:1.8;margin:0}.panel-body{padding:22px 24px}.pill{border:1px solid rgba(106,173,250,.2);border-radius:999px;background:rgba(93,159,245,.11);color:#9ccaff;font-size:10px;font-weight:800;padding:7px 12px;white-space:nowrap}
+.filters{display:grid;grid-template-columns:minmax(140px,175px) minmax(180px,1fr);gap:14px;margin-bottom:16px}.filters .field label{font-size:10px}.filters .field input{padding:10px 12px;min-height:42px;font-size:12px}.action-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}.action-row .btn{min-height:39px;padding:8px 13px;font-size:11px}
+.table-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--stroke);border-radius:16px}table{border-collapse:collapse;width:100%;min-width:550px}thead{background:rgba(7,16,35,.42)}th{text-align:right;color:#8199c0;font-weight:700;font-size:10px;padding:13px 15px}td{padding:13px 15px;border-top:1px solid rgba(180,211,255,.08);font-size:11px;vertical-align:middle}tbody tr:hover{background:rgba(87,137,255,.04)}.name-cell{display:flex;align-items:center;gap:10px}.name-avatar{width:35px;height:35px;flex:none;display:grid;place-items:center;border:1px solid rgba(147,189,255,.13);background:linear-gradient(145deg,rgba(100,130,224,.2),rgba(42,213,203,.09));border-radius:12px;font-weight:900;color:#bfe4ff}.name-cell b{font-size:11px}.name-cell small{display:block;color:#6f87af;margin-top:3px;font-size:9px}.status-select,.note-input{font:inherit;width:100%;padding:9px 10px;color:#e6f1ff;background:rgba(9,21,47,.6);border:1px solid rgba(180,211,255,.12);border-radius:11px;font-size:11px;outline:none}.status-select option{background:#0e1c3b}.status-select:focus,.note-input:focus{border-color:#7bbaff}.note-input::placeholder{color:#6e83a8}.empty{text-align:center;padding:26px!important;color:#8fa6ca}
+.side-panel{padding:24px;border-radius:24px}.side-panel h3{margin:0 0 9px;font-size:15px}.side-panel .explainer{font-size:11px;color:#839abc;line-height:2}.ring{width:170px;height:170px;margin:25px auto 20px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#63d7c7 0deg, #63d7c7 var(--ring),rgba(145,186,254,.11) var(--ring),rgba(145,186,254,.11) 360deg);box-shadow:0 0 60px rgba(63,199,193,.08)}.ring-inner{width:137px;height:137px;border-radius:50%;background:#111d38;border:1px solid rgba(205,232,255,.10);display:flex;align-items:center;justify-content:center;flex-direction:column}.ring-inner strong{font-size:32px;line-height:1.3}.ring-inner span{font-size:10px;color:#829cbe}.legend{display:grid;gap:13px;margin-top:10px}.legend-row{display:flex;align-items:center;justify-content:space-between;color:#9badca;font-size:11px}.legend-row span{display:flex;align-items:center;gap:8px}.legend-dot{width:9px;height:9px;border-radius:50%;background:var(--dot)}.legend-row b{color:#eaf3ff;font-size:11px}.side-tip{margin-top:22px;padding:13px 15px;border-radius:13px;background:rgba(106,154,255,.08);border:1px solid rgba(126,171,255,.13);color:#94b1d9;font-size:10px;line-height:2}
+/* student */.student-main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px}.student-main .panel{grid-column:1}.student-main .side-panel{grid-row:1;grid-column:2}.progress-track{height:10px;border-radius:99px;overflow:hidden;background:rgba(126,167,231,.12);margin-top:22px}.progress-track span{height:100%;display:block;background:linear-gradient(90deg,#71e4cb,#75b6ff);border-radius:99px;transition:width .4s}
+.status-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid var(--stroke)}.status-pill:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--st-color)}
+/* toast */.toast{position:fixed;z-index:99;bottom:28px;left:28px;right:auto;min-width:270px;max-width:min(420px,calc(100% - 40px));padding:15px 18px;border-radius:16px;border:1px solid rgba(95,224,178,.22);background:#13283b;color:#aff7de;box-shadow:0 22px 60px rgba(0,0,0,.4);font-size:12px;line-height:1.9;animation:rise .25s both}.toast.error{background:#342038;color:#ffd1de;border-color:rgba(255,126,162,.24)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+@media(max-width:1150px){.overview{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}.side-panel{display:block}.student-main{grid-template-columns:1fr}.student-main .panel,.student-main .side-panel{grid-column:auto;grid-row:auto}}
+@media(max-width:900px){.login{grid-template-columns:1fr}.login-form-panel{min-height:100vh;border-left:0}.login-showcase{display:none}.shell{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 10px}.sidebar .logo-row{justify-content:center;margin:0 0 32px}.sidebar .logo-row div:not(.logo-mark),.side-label,.side-link span,.school-info{display:none}.side-link{justify-content:center;padding:13px}.topbar{padding:18px 20px}}
+@media(max-width:640px){.shell{display:block}.sidebar{display:none}.topbar{padding:14px 15px}.content{padding:24px 13px}.dash-hero{align-items:flex-start;flex-direction:column}.overview{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat-card{padding:15px}.stat-card .value{font-size:26px}.filters{grid-template-columns:1fr}.panel-body,.panel-header{padding:17px}.topbar h1{font-size:13px}.topbar p{display:none}.user-chip b,.user-chip small{display:none}.login-form-panel{padding:22px}.logo-row{margin-bottom:30px}}
+</style>
 </head>
 <body>
-  <section id="loginScreen" class="login-screen">
-    <div class="login-hero">
-      <div class="float-card a">✨ طراحی شیشه‌ای مدرن</div>
-      <div class="float-card b">💙 ظاهر لوکس و مدرسه‌ای</div>
-      <div class="hero-wrap">
-        <div class="glass-chip"><span class="hero-dot"></span> هنرستان سما • نسخه شیشه‌ای</div>
-        <h1>ظاهر زیبا، شیشه‌ای و حرفه‌ای<br><span class="shine">برای سامانه حضور و غیاب</span></h1>
-        <p>این نسخه با استایل شیشه‌ای، کارت‌های شفاف، متن‌های زیباتر، داشبورد مدرن و حس حرفه‌ای‌تر طراحی شده تا تغییرش واضح باشد و سایت خیلی خوشگل‌تر دیده شود.</p>
-        <div class="hero-stats">
-          <div class="hero-stat"><span>دانش‌آموزان</span><strong>22</strong><span>فهرست کلاس</span></div>
-          <div class="hero-stat"><span>پنل‌ها</span><strong>2</strong><span>معلم و دانش‌آموز</span></div>
-          <div class="hero-stat"><span>وضعیت‌ها</span><strong>4</strong><span>حاضر، غایب، تأخیر، موجه</span></div>
-        </div>
+<div class="scene"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
+<!-- SVG icon collection -->
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6M18 14c2.3.4 3 2.5 3 4v2"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6 18 18M18 6 6 18"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M13 8l4 4-4 4M17 12H8"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v4h16v-4"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M5.5 9A7 7 0 0 1 18 6l2 5M4 13l2 5a7 7 0 0 0 12.5-3"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2.8 7.2L22 12l-7.2 2.8L12 22l-2.8-7.2L2 12l7.2-2.8L12 2Z"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h14a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2V4Zm0 12c1-1 2.4-1 3 0h13M8 8h8"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol>
+</defs></svg>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+<section id="loginScreen" class="login">
+  <div class="login-form-panel">
+    <div class="login-form">
+      <div class="logo-row"><div class="logo-mark">س</div><div><strong>هنرستان سما</strong><small>سامانه یکپارچه حضور و غیاب</small></div></div>
+      <div class="eyebrow"><svg class="icon" style="width:15px;height:15px"><use href="#i-spark"/></svg>نسخه جدید • طراحی اختصاصی</div>
+      <h1>به <span class="gradient-text">سامانه سما</span><br>خوش آمدید.</h1>
+      <p class="desc">حضور و غیاب هوشمند، دقیق و ساده؛ برای معلم و دانش‌آموز در یک محیط امن و چشم‌نواز.</p>
+      <div class="form-stack">
+        <div class="field"><label for="username">ایمیل یا نام کاربری</label><input id="username" autocomplete="username" placeholder="ایمیل معلم یا student22" /></div>
+        <div class="field"><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" placeholder="رمز عبور حساب" /></div>
+        <button id="loginBtn" class="btn btn-primary" type="button">ورود به پنل <svg class="icon"><use href="#i-out"/></svg></button>
+      </div>
+      <div id="loginMsg" class="notice hidden" style="margin-top:18px"></div>
+      <p class="login-small">معلم با ایمیل حساب Supabase و دانش‌آموز با نام کاربری اختصاصی خودش وارد می‌شود. رمزت را با دیگران به اشتراک نگذار.</p>
+    </div>
+  </div>
+  <div class="login-showcase">
+    <div class="showcase-main">
+      <div class="showcase-badge"><span class="shine-dot"></span> تجربه‌ای متفاوت برای مدیریت کلاس</div>
+      <h2>حضور و غیاب،<br><span class="gradient-text">در سطحی بالاتر.</span></h2>
+      <p>سامانه اختصاصی هنرستان سما با داشبوردهای دقیق، آمار زنده، سوابق شخصی و طراحی مدرن برای مدیریت هر روز کلاس.</p>
+      <div class="showcase-ui">
+        <div class="showcase-ui-head"><strong>نمای کلی کلاس</strong><div class="showcase-dots"><span></span><span></span><span></span></div></div>
+        <div class="showcase-stats"><div class="showcase-stat"><span>کل کلاس</span><b>۲۲</b></div><div class="showcase-stat"><span>حضور</span><b>✓</b></div><div class="showcase-stat"><span>غیبت</span><b>—</b></div></div>
+        <div class="showcase-bar"><span></span><span></span><span></span></div>
+        <div class="showcase-note"><svg class="icon"><use href="#i-spark"/></svg>چارت تزئینی؛ اطلاعات واقعی پس از ورود نمایش داده می‌شوند.</div>
       </div>
     </div>
-    <div class="login-side">
-      <div class="login-box glass-strong">
-        <div class="brand-row">
-          <div class="logo">س</div>
-          <div><b>هنرستان سما</b><small>سامانه حضور و غیاب شیشه‌ای</small></div>
+  </div>
+</section>
+
+<section id="appShell" class="shell hidden">
+  <aside class="sidebar">
+    <div class="logo-row"><div class="logo-mark">س</div><div><strong>هنرستان سما</strong><small>سامانه حضور و غیاب</small></div></div>
+    <div class="side-label">مدیریت کلاس</div>
+    <div class="side-link active"><svg class="icon"><use href="#i-grid"/></svg><span>داشبورد اصلی</span></div>
+    <div class="side-link"><svg class="icon"><use href="#i-check"/></svg><span>حضور و غیاب</span></div>
+    <div class="side-link"><svg class="icon"><use href="#i-calendar"/></svg><span>سوابق و گزارش‌ها</span></div>
+    <div class="sidebar-bottom"><div class="school-info"><b>✦ هنرستان سما</b><p>نسخه تازه با طراحی اختصاصی و اتصال به سامانه اصلی حضور و غیاب.</p></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><h1>داشبورد هنرستان سما</h1><p>سامانه هوشمند حضور و غیاب</p></div><div class="top-actions"><div class="user-chip"><span class="avatar">س</span><span><b id="userName">کاربر</b><small id="userRole">حساب</small></span></div><button id="logoutBtn" class="icon-button" type="button" aria-label="خروج از حساب" title="خروج"><svg class="icon"><use href="#i-out"/></svg></button></div></header>
+    <div class="content">
+      <section class="dash-hero"><div><div class="kicker">✦ یک روز تازه در سما</div><h2 id="greeting">سلام، خوش آمدید 👋</h2><p id="welcomeText">به سامانه خوش آمدید.</p></div><div class="date-badge"><svg class="icon"><use href="#i-calendar"/></svg><span id="todayLabel">امروز</span></div></section>
+      <section id="teacherPanel" class="hidden">
+        <div class="overview">
+          <div class="stat-card glass" style="--glow:rgba(112,168,255,.24);--icon-bg:rgba(112,168,255,.12);--icon-color:#9bc8ff"><div class="overline">کل دانش‌آموزان<span class="symbol"><svg class="icon"><use href="#i-users"/></svg></span></div><strong id="totalCount" class="value">۰</strong><span class="footnote">اعضای کلاس</span></div>
+          <div class="stat-card glass" style="--glow:rgba(75,233,169,.2);--icon-bg:rgba(75,233,169,.1);--icon-color:#7cecc1"><div class="overline">حاضر<span class="symbol"><svg class="icon"><use href="#i-check"/></svg></span></div><strong id="presentCount" class="value">۰</strong><span class="footnote">وضعیت انتخاب‌شده</span></div>
+          <div class="stat-card glass" style="--glow:rgba(249,110,152,.19);--icon-bg:rgba(249,110,152,.1);--icon-color:#ff9ab6"><div class="overline">غایب<span class="symbol"><svg class="icon"><use href="#i-x"/></svg></span></div><strong id="absentCount" class="value">۰</strong><span class="footnote">وضعیت انتخاب‌شده</span></div>
+          <div class="stat-card glass" style="--glow:rgba(249,179,97,.2);--icon-bg:rgba(249,179,97,.1);--icon-color:#ffd29a"><div class="overline">تأخیر و موجه<span class="symbol"><svg class="icon"><use href="#i-clock"/></svg></span></div><strong id="otherCount" class="value">۰</strong><span class="footnote">وضعیت انتخاب‌شده</span></div>
         </div>
-        <h2>ورود به سامانه</h2>
-        <p class="lead">معلم با ایمیل ثبت‌شده و دانش‌آموزها با نام کاربری اختصاصی وارد شوند.</p>
-        <div class="stack">
-          <div class="field"><label for="username">نام کاربری یا ایمیل</label><input id="username" autocomplete="username" placeholder="مثلاً student22 یا ایمیل معلم" /></div>
-          <div class="field"><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" placeholder="رمز عبور" /></div>
-          <button id="loginBtn" class="btn btn-primary">ورود به سامانه <span>←</span></button>
+        <div class="two-col">
+          <section class="panel glass">
+            <div class="panel-header"><div><h3>لیست حضور و غیاب</h3><p>انتخاب وضعیت دانش‌آموزان و ثبت برای تاریخ موردنظر</p></div><span class="pill">پنل معلم</span></div>
+            <div class="panel-body">
+              <div class="filters"><div class="field"><label for="attendanceDate">تاریخ</label><input type="date" id="attendanceDate"></div><div class="field"><label for="classFilter">جست‌وجوی دانش‌آموز</label><input id="classFilter" placeholder="نام، شماره یا کلاس را بنویس"></div></div>
+              <div class="action-row"><button id="saveBtn" class="btn btn-primary"><svg class="icon"><use href="#i-check"/></svg>ذخیره حضور و غیاب</button><button id="loadBtn" class="btn btn-secondary"><svg class="icon"><use href="#i-refresh"/></svg>بارگذاری مجدد</button><button id="allPresentBtn" class="btn btn-secondary">همه حاضر</button><button id="csvBtn" class="btn btn-secondary"><svg class="icon"><use href="#i-download"/></svg>خروجی CSV</button></div>
+              <div id="teacherMsg" class="notice hidden" style="margin-bottom:15px"></div>
+              <div class="table-wrap"><table><thead><tr><th>دانش‌آموز</th><th>وضعیت</th><th>یادداشت</th></tr></thead><tbody id="studentsBody"><tr><td colspan="3" class="empty">در حال بارگذاری…</td></tr></tbody></table></div>
+            </div>
+          </section>
+          <aside class="side-panel glass"><h3>خلاصه وضعیت کلاس</h3><p class="explainer">نمودار بر اساس وضعیت‌های انتخاب‌شده برای تاریخ جاری نمایش داده می‌شود.</p><div class="ring" id="teacherRing" style="--ring:0deg"><div class="ring-inner"><strong id="teacherRate">۰٪</strong><span>نرخ حضور</span></div></div><div class="legend"><div class="legend-row"><span><i class="legend-dot" style="--dot:#63d7c7"></i>حاضر</span><b id="legendPresent">۰</b></div><div class="legend-row"><span><i class="legend-dot" style="--dot:#ff849e"></i>غایب</span><b id="legendAbsent">۰</b></div><div class="legend-row"><span><i class="legend-dot" style="--dot:#818aff"></i>تأخیر و موجه</span><b id="legendOther">۰</b></div></div><div class="side-tip">برای ثبت قطعی، بعد از انتخاب وضعیت‌ها روی «ذخیره حضور و غیاب» بزن. وضعیت‌ها قبل از ذخیره فقط پیش‌نویس هستند.</div></aside>
         </div>
-        <div id="loginMsg" class="notice hidden"></div>
-        <div class="hint">این نسخه تغییر ظاهری زیادی دارد و همچنان همه قابلیت‌های قبلی را نگه می‌دارد.</div>
-      </div>
+      </section>
+      <section id="studentPanel" class="hidden">
+        <div class="overview">
+          <div class="stat-card glass" style="--glow:rgba(112,168,255,.24);--icon-bg:rgba(112,168,255,.12);--icon-color:#9bc8ff"><div class="overline">روزهای ثبت‌شده<span class="symbol"><svg class="icon"><use href="#i-calendar"/></svg></span></div><strong id="daysCount" class="value">۰</strong><span class="footnote">کل سوابق</span></div>
+          <div class="stat-card glass" style="--glow:rgba(75,233,169,.2);--icon-bg:rgba(75,233,169,.1);--icon-color:#7cecc1"><div class="overline">حضور<span class="symbol"><svg class="icon"><use href="#i-check"/></svg></span></div><strong id="myPresent" class="value">۰</strong><span class="footnote">روز حاضر</span></div>
+          <div class="stat-card glass" style="--glow:rgba(249,110,152,.19);--icon-bg:rgba(249,110,152,.1);--icon-color:#ff9ab6"><div class="overline">غیبت<span class="symbol"><svg class="icon"><use href="#i-x"/></svg></span></div><strong id="myAbsent" class="value">۰</strong><span class="footnote">روز غایب</span></div>
+          <div class="stat-card glass" style="--glow:rgba(249,179,97,.2);--icon-bg:rgba(249,179,97,.1);--icon-color:#ffd29a"><div class="overline">درصد حضور<span class="symbol"><svg class="icon"><use href="#i-grid"/></svg></span></div><strong id="attendanceRate" class="value">۰٪</strong><span class="footnote">بر اساس روزهای ثبت‌شده</span></div>
+        </div>
+        <div class="student-main">
+          <section class="panel glass"><div class="panel-header"><div><h3>کارنامه حضور و غیاب من</h3><p id="studentInfo">سوابق شخصی حساب شما</p></div><span class="pill">پنل دانش‌آموز</span></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr></thead><tbody id="myAttendance"><tr><td colspan="3" class="empty">در حال بارگذاری…</td></tr></tbody></table></div></div></section>
+          <aside class="side-panel glass"><h3>روند حضور من</h3><p class="explainer">آمار شخصی از روزهایی که حضور و غیاب برای آن‌ها ثبت شده است.</p><div class="ring" id="studentRing" style="--ring:0deg"><div class="ring-inner"><strong id="studentRingRate">۰٪</strong><span>حضور</span></div></div><div class="progress-track"><span id="studentProgress" style="width:0%"></span></div><div class="side-tip">سوابق این بخش فقط متعلق به حساب دانش‌آموز واردشده است. تغییر سوابق فقط در اختیار معلم قرار دارد.</div></aside>
+        </div>
+      </section>
     </div>
-  </section>
-
-  <section id="appShell" class="app-shell hidden">
-    <aside class="sidebar">
-      <div class="side-shell glass-strong">
-        <div class="side-brand">
-          <div class="logo">س</div>
-          <div><strong>هنرستان سما</strong><small>سامانه حضور و غیاب</small></div>
-        </div>
-        <div class="menu-title">منوی اصلی</div>
-        <div class="nav-item active"><span class="nav-icon">▦</span><span>داشبورد</span></div>
-        <div class="nav-item"><span class="nav-icon">◷</span><span>حضور و غیاب</span></div>
-        <div class="nav-item"><span class="nav-icon">▤</span><span>سوابق</span></div>
-        <div class="nav-item"><span class="nav-icon">★</span><span>حساب کاربری</span></div>
-        <div class="side-footer">نسخه شیشه‌ای هنرستان سما<br>زیبا، مدرن و حرفه‌ای</div>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <div class="top-title">سامانه حضور و غیاب هنرستان سما</div>
-          <div class="top-sub">ظاهر شیشه‌ای و طراحی مدرن برای پروژه مدرسه</div>
-        </div>
-        <div class="top-actions">
-          <button id="themeBtn" class="chip-btn" type="button">🌙 حالت تیره</button>
-          <div class="user-chip">
-            <div class="avatar">✓</div>
-            <div class="user-meta"><b id="userName">کاربر</b><small id="userRole">حساب کاربری</small></div>
-            <button id="logoutBtn" class="btn btn-ghost" style="height:40px;padding:0 12px">خروج</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="content">
-        <div class="hero-grid">
-          <div class="hero-panel">
-            <div class="glass-chip">💎 استایل شیشه‌ای</div>
-            <h1 id="greeting">سلام، خوش آمدید 👋</h1>
-            <p id="welcomeText">به داشبورد سامانه حضور و غیاب هنرستان سما خوش آمدید.</p>
-            <div class="hero-tags">
-              <span class="hero-tag">متن‌های شفاف</span>
-              <span class="hero-tag">کارت‌های شیشه‌ای</span>
-              <span class="hero-tag">ظاهر مدرن و خاص</span>
-            </div>
-          </div>
-          <div class="info-panel glass">
-            <span class="kicker">امروز</span>
-            <strong id="todayLabel">امروز</strong>
-            <small>لینک سایت را می‌توانی برای بقیه بفرستی. فقط کسانی که حساب دارند می‌توانند وارد پنل شوند.</small>
-          </div>
-        </div>
-
-        <section id="teacherPanel" class="hidden">
-          <div class="grid4">
-            <div class="card glass stat-card"><div class="stat-head"><span>کل دانش‌آموزان</span><span class="stat-icon">👥</span></div><strong id="totalCount" class="big">0</strong><small>فهرست ثبت‌شده کلاس</small></div>
-            <div class="card glass stat-card"><div class="stat-head"><span>حاضرین</span><span class="stat-icon">✓</span></div><strong id="presentCount" class="big">0</strong><small>دانش‌آموزان حاضر</small></div>
-            <div class="card glass stat-card"><div class="stat-head"><span>غایبین</span><span class="stat-icon">!</span></div><strong id="absentCount" class="big">0</strong><small>غیبت‌های امروز</small></div>
-            <div class="card glass stat-card"><div class="stat-head"><span>تأخیر / موجه</span><span class="stat-icon">◷</span></div><strong id="otherCount" class="big">0</strong><small>مجموع تأخیر و موجه</small></div>
-          </div>
-
-          <div class="section glass">
-            <div class="section-head">
-              <div><h2>ثبت حضور و غیاب روزانه</h2><p>وضعیت هر دانش‌آموز را تعیین کن و در پایان روی ذخیره تغییرات بزن.</p></div>
-              <span class="pill">پنل معلم</span>
-            </div>
-            <div class="section-body">
-              <div class="controls">
-                <div class="field"><label for="attendanceDate">تاریخ</label><input id="attendanceDate" type="date" /></div>
-                <div class="field"><label for="classFilter">جست‌وجوی نام، شماره یا کلاس</label><input id="classFilter" placeholder="مثلاً الیاد، 22، یا کلاس دهم" /></div>
-                <div class="toolbar">
-                  <button id="loadBtn" class="btn btn-soft" type="button">↻ بارگذاری</button>
-                  <button id="allPresentBtn" class="btn btn-ghost" type="button">همه حاضر</button>
-                  <button id="saveBtn" class="btn btn-primary" type="button">✓ ذخیره تغییرات</button>
-                  <button id="csvBtn" class="btn btn-ghost" type="button">↓ خروجی CSV</button>
-                </div>
-              </div>
-              <div id="teacherMsg" class="notice hidden"></div>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>دانش‌آموز</th><th>وضعیت حضور</th><th>یادداشت</th></tr></thead>
-                <tbody id="studentsBody"></tbody>
-              </table>
-            </div>
-          </div>
-          <div class="footer-note">کارت‌ها، متن‌ها و بخش‌های اصلی این نسخه شیشه‌ای شده‌اند تا تغییرات کاملاً مشخص باشند.</div>
-        </section>
-
-        <section id="studentPanel" class="hidden">
-          <div class="grid4">
-            <div class="card glass"><div class="stat-head"><span>روزهای ثبت‌شده</span><span class="stat-icon">▤</span></div><strong id="daysCount" class="big">0</strong><small>سوابق ثبت‌شده شما</small></div>
-            <div class="card glass"><div class="stat-head"><span>حضور</span><span class="stat-icon">✓</span></div><strong id="myPresent" class="big">0</strong><small>روزهای حضور</small></div>
-            <div class="card glass"><div class="stat-head"><span>غیبت</span><span class="stat-icon">!</span></div><strong id="myAbsent" class="big">0</strong><small>روزهای غیبت</small></div>
-            <div class="card glass"><div class="stat-head"><span>درصد حضور</span><span class="stat-icon">%</span></div><strong id="attendanceRate" class="big">0٪</strong><small>نرخ حضور شما</small><div style="margin-top:10px"><div class="rate-track"><div id="attendanceRateBar" class="rate-fill"></div></div></div></div>
-          </div>
-          <div class="section glass">
-            <div class="section-head"><div><h2>سوابق حضور و غیاب من</h2><p id="studentInfo">گزارش شخصی شما</p></div><span class="pill">پنل دانش‌آموز</span></div>
-            <div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr></thead><tbody id="myAttendance"></tbody></table></div>
-          </div>
-          <div class="footer-note">دانش‌آموز فقط سوابق خودش را می‌بیند و تغییر آن فقط از طریق پنل معلم انجام می‌شود.</div>
-        </section>
-      </div>
-    </main>
-  </section>
-
-  <script>
-    const SUPABASE_URL = 'https://gmhidwihvrpnqpxrroen.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_X9Y8oacPcsT2XTadzDo6hQ_RvDfc91K';
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const aliases = {student22:'student22@class-attendance.test',student17:'student17@class-attendance.test',student18:'student18@class-attendance.test',student14:'student14@class-attendance.test'};
-    let currentUser=null,currentProfile=null,studentRows=[],savedRows=[];
-    const $=id=>document.getElementById(id);
-    const todayISO=()=>new Date().toLocaleDateString('en-CA');
-    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const faStatus=s=>({present:'حاضر',absent:'غایب',late:'با تأخیر',excused:'موجه'})[s]||s;
-    function showNotice(id,text,type=''){const el=$(id);el.textContent=text;el.className='notice'+(type?' '+type:'');el.classList.remove('hidden')}
-    function hide(id){$(id).classList.add('hidden')}
-    function saveTheme(mode){localStorage.setItem('sama_glass_theme',mode)}
-    function applyTheme(mode){document.body.classList.toggle('dark',mode==='dark');$('themeBtn').textContent=mode==='dark'?'☀️ حالت روشن':'🌙 حالت تیره';saveTheme(mode)}
-    $('attendanceDate').value=todayISO();
-    $('todayLabel').textContent=new Intl.DateTimeFormat('fa-IR',{dateStyle:'full'}).format(new Date());
-    applyTheme(localStorage.getItem('sama_glass_theme')||'light');
-    $('themeBtn').addEventListener('click',()=>applyTheme(document.body.classList.contains('dark')?'light':'dark'));
-    $('loginBtn').addEventListener('click',login);
-    $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
-    $('logoutBtn').addEventListener('click',logout);
-    $('loadBtn').addEventListener('click',loadTeacherList);
-    $('saveBtn').addEventListener('click',saveAttendance);
-    $('csvBtn').addEventListener('click',exportCsv);
-    $('allPresentBtn').addEventListener('click',setAllPresent);
-    $('attendanceDate').addEventListener('change',loadTeacherList);
-    $('classFilter').addEventListener('input',renderTeacherRows);
-
-    async function login(){
-      const rawUser=$('username').value.trim(),password=$('password').value;
-      if(!rawUser||!password){showNotice('loginMsg','نام کاربری و رمز عبور را وارد کنید.','error');return}
-      const email=aliases[rawUser.toLowerCase()]||rawUser;$('loginBtn').disabled=true;hide('loginMsg');
-      const {data,error}=await db.auth.signInWithPassword({email,password});$('loginBtn').disabled=false;
-      if(error){showNotice('loginMsg','ورود ناموفق بود. نام کاربری و رمز عبور را بررسی کنید.','error');return}
-      currentUser=data.user;await openApp();
-    }
-    async function openApp(){
-      const {data:profile,error}=await db.from('profiles').select('id,full_name,role').eq('id',currentUser.id).maybeSingle();
-      if(error||!profile){showNotice('loginMsg','پروفایل این حساب در جدول profiles پیدا نشد. مدیر سامانه باید آن را بررسی کند.','error');await db.auth.signOut();currentUser=null;return}
-      currentProfile=profile;$('loginScreen').classList.add('hidden');$('appShell').classList.remove('hidden');$('userName').textContent=profile.full_name||'کاربر';$('userRole').textContent=profile.role==='teacher'?'معلم':'دانش‌آموز';$('greeting').textContent='سلام، '+(profile.full_name||'خوش آمدید')+' 👋';
-      if(profile.role==='teacher'){$('teacherPanel').classList.remove('hidden');$('studentPanel').classList.add('hidden');$('welcomeText').textContent='در این بخش می‌توانید حضور و غیاب روزانه کلاس را مدیریت کنید.';await loadTeacherList()}
-      else if(profile.role==='student'){$('studentPanel').classList.remove('hidden');$('teacherPanel').classList.add('hidden');$('welcomeText').textContent='در این بخش سوابق شخصی حضور و غیاب خودت را می‌بینی.';await loadStudentHistory()}
-      else {await logout();showNotice('loginMsg','نقش این حساب معتبر نیست.','error')}
-    }
-    async function logout(){await db.auth.signOut();currentUser=null;currentProfile=null;$('appShell').classList.add('hidden');$('loginScreen').classList.remove('hidden');$('teacherPanel').classList.add('hidden');$('studentPanel').classList.add('hidden');$('password').value='';hide('loginMsg');hide('teacherMsg')}
-    async function loadTeacherList(){
-      showNotice('teacherMsg','در حال دریافت فهرست دانش‌آموزان...');
-      const {data:students,error}=await db.from('students').select('id,student_number,full_name,class_name').order('student_number');
-      if(error){showNotice('teacherMsg','خطا در دریافت فهرست: '+error.message,'error');return}
-      studentRows=students||[];
-      const {data:att,error:attErr}=await db.from('attendance').select('student_id,status,note').eq('attendance_date',$('attendanceDate').value);
-      if(attErr){showNotice('teacherMsg','خطا در دریافت حضور و غیاب: '+attErr.message,'error');return}
-      savedRows=att||[];renderTeacherRows();showNotice('teacherMsg','فهرست با موفقیت بارگذاری شد.','success');
-    }
-    function renderTeacherRows(){
-      const q=$('classFilter').value.trim().toLowerCase();const byId=Object.fromEntries(savedRows.map(a=>[a.student_id,a]));
-      const rows=studentRows.filter(s=>{const name=(s.full_name||'').toLowerCase(),cls=(s.class_name||'').toLowerCase(),num=String(s.student_number||'').toLowerCase();return !q||name.includes(q)||cls.includes(q)||num.includes(q)});
-      if(!rows.length){$('studentsBody').innerHTML='<tr><td colspan="3" class="empty">دانش‌آموزی برای نمایش پیدا نشد.</td></tr>';$('totalCount').textContent=String(studentRows.length);$('presentCount').textContent='0';$('absentCount').textContent='0';$('otherCount').textContent='0';return}
-      $('studentsBody').innerHTML=rows.map(s=>{const a=byId[s.id]||{};return `<tr data-id="${esc(s.id)}"><td><div class="student-cell"><div class="student-avatar">${esc((s.full_name||'?').trim().slice(0,1))}</div><div><div class="student-name">${esc(s.full_name)}</div><div class="student-number">شماره ${esc(s.student_number||'—')}</div><div class="student-class">${esc(s.class_name||'—')}</div></div></div></td><td><select class="status-select"><option value="present" ${a.status==='present'?'selected':''}>حاضر</option><option value="absent" ${a.status==='absent'?'selected':''}>غایب</option><option value="late" ${a.status==='late'?'selected':''}>با تأخیر</option><option value="excused" ${a.status==='excused'?'selected':''}>موجه</option></select></td><td><input class="note-input" value="${esc(a.note||'')}" placeholder="توضیح اختیاری" /></td></tr>`}).join('');
-      $('totalCount').textContent=String(studentRows.length);updateTeacherCounts();[...document.querySelectorAll('.status-select')].forEach(sel=>sel.addEventListener('change',updateTeacherCounts));
-    }
-    function updateTeacherCounts(){const selects=[...document.querySelectorAll('.status-select')];const present=selects.filter(s=>s.value==='present').length,absent=selects.filter(s=>s.value==='absent').length,other=selects.filter(s=>s.value==='late'||s.value==='excused').length;$('presentCount').textContent=String(present);$('absentCount').textContent=String(absent);$('otherCount').textContent=String(other)}
-    function setAllPresent(){document.querySelectorAll('.status-select').forEach(sel=>sel.value='present');updateTeacherCounts();showNotice('teacherMsg','وضعیت همه دانش‌آموزان روی «حاضر» قرار گرفت.','success')}
-    async function saveAttendance(){
-      const date=$('attendanceDate').value,trs=[...$('studentsBody').querySelectorAll('tr[data-id]')];if(!date||!trs.length){showNotice('teacherMsg','تاریخ یا فهرست دانش‌آموزان معتبر نیست.','error');return}
-      const records=trs.map(tr=>({student_id:tr.dataset.id,attendance_date:date,status:tr.querySelector('.status-select').value,note:tr.querySelector('.note-input').value.trim(),recorded_by:currentUser.id}));$('saveBtn').disabled=true;
-      const {error}=await db.from('attendance').upsert(records,{onConflict:'student_id,attendance_date'});$('saveBtn').disabled=false;if(error){showNotice('teacherMsg','ذخیره انجام نشد: '+error.message,'error');return}
-      showNotice('teacherMsg','تغییرات با موفقیت ذخیره شد.','success');await loadTeacherList();
-    }
-    async function loadStudentHistory(){
-      const {data:student,error}=await db.from('students').select('id,student_number,full_name,class_name').eq('user_id',currentUser.id).maybeSingle();
-      if(error||!student){$('studentInfo').textContent='اطلاعات دانش‌آموز پیدا نشد؛ اتصال user_id را بررسی کنید.';$('myAttendance').innerHTML='<tr><td colspan="3" class="empty">اطلاعات دانش‌آموزی برای این حساب پیدا نشد.</td></tr>';return}
-      $('studentInfo').textContent='شماره '+student.student_number+' · '+student.full_name+(student.class_name?' · '+student.class_name:'');
-      const {data,error:attErr}=await db.from('attendance').select('attendance_date,status,note').eq('student_id',student.id).order('attendance_date',{ascending:false});
-      if(attErr){$('myAttendance').innerHTML=`<tr><td colspan="3" class="empty">${esc(attErr.message)}</td></tr>`;return}
-      const rows=data||[],present=rows.filter(x=>x.status==='present').length,absent=rows.filter(x=>x.status==='absent').length,rate=rows.length?Math.round((present/rows.length)*100):0;$('daysCount').textContent=String(rows.length);$('myPresent').textContent=String(present);$('myAbsent').textContent=String(absent);$('attendanceRate').textContent=rate+'٪';$('attendanceRateBar').style.width=rate+'%';
-      $('myAttendance').innerHTML=rows.length?rows.map(a=>`<tr><td>${esc(a.attendance_date)}</td><td>${faStatus(a.status)}</td><td>${esc(a.note||'—')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>';
-    }
-    function exportCsv(){
-      const trs=[...$('studentsBody').querySelectorAll('tr[data-id]')];if(!trs.length){showNotice('teacherMsg','برای خروجی گرفتن، ابتدا فهرست دانش‌آموزان را بارگذاری کن.','error');return}
-      const rows=[['شماره','نام','کلاس','وضعیت','یادداشت'],...trs.map(tr=>[tr.querySelector('.student-number').textContent.replace('شماره ',''),tr.querySelector('.student-name').textContent,tr.querySelector('.student-class').textContent,faStatus(tr.querySelector('.status-select').value),tr.querySelector('.note-input').value])];
-      const csv='\uFEFF'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='attendance-'+$('attendanceDate').value+'.csv';a.click();URL.revokeObjectURL(a.href)
-    }
-    db.auth.getSession().then(({data})=>{if(data.session){currentUser=data.session.user;openApp()}});
-  </script>
-</body>
-</html>
+  </main>
+</section>
+<script>
+'use strict';
+const SUPABASE_URL='https://gmhidwihvrpnqpxrroen.supabase.co';
+const SUPABASE_KEY='sb_publishable_X9Y8oacPcsT2XTadzDo6hQ_RvDfc91K';
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const alias={student22:'student22@class-attendance.test',student17:'student17@class-attendance.test',student18:'student18@class-attendance.test',student14:'student14@class-attendance.test'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const names={present:'حاضر',absent:'غایب',late:'با تأخیر',excused:'موجه'};
+const digits=n=>Number(n).toLocaleString('fa-IR');
+const nowDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+let user=null,profile=null,students=[],draft=new Map(),dirty=false,toastTimer=null,lastLoadedDate=null;
+$('attendanceDate').value=nowDate();
+$('todayLabel').textContent=new Intl.DateTimeFormat('fa-IR',{dateStyle:'full'}).format(new Date());
+function message(id,text,type=''){const el=$(id);el.textContent=text;el.className='notice'+(type?' '+type:'');el.classList.remove('hidden')}
+function hide(id){$(id).classList.add('hidden')}
+function toast(text,type=''){const el=$('toast');el.textContent=text;el.className='toast'+(type?' '+type:'');el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),5000)}
+function showLogin(){user=null;profile=null;students=[];draft.clear();dirty=false;$('loginScreen').classList.remove('hidden');$('appShell').classList.add('hidden');$('teacherPanel').classList.add('hidden');$('studentPanel').classList.add('hidden');$('password').value=''}
+async function login(){
+  const username=$('username').value.trim(),password=$('password').value;
+  if(!username||!password){message('loginMsg','نام کاربری و رمز عبور را وارد کنید.','error');return}
+  const email=alias[username.toLowerCase()]||username;
+  $('loginBtn').disabled=true;hide('loginMsg');
+  try{const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;user=data.user;await openApp()}
+  catch(err){message('loginMsg',err.message?.includes('Invalid login')?'نام کاربری یا رمز عبور درست نیست.':'ورود انجام نشد. اتصال و اطلاعات حساب را بررسی کن.','error')}
+  finally{$('loginBtn').disabled=false}
+}
+async function openApp(){
+  const {data,error}=await client.from('profiles').select('id,full_name,role').eq('id',user.id).maybeSingle();
+  if(error||!data){await client.auth.signOut();user=null;message('loginMsg','پروفایل این حساب پیدا نشد. مدیر سامانه باید جدول profiles را بررسی کند.','error');return}
+  profile=data;
+  if(!['teacher','student'].includes(profile.role)){await client.auth.signOut();user=null;message('loginMsg','نقش این حساب معتبر نیست.','error');return}
+  $('loginScreen').classList.add('hidden');$('appShell').classList.remove('hidden');
+  $('userName').textContent=profile.full_name||'کاربر';$('userRole').textContent=profile.role==='teacher'?'معلم':'دانش‌آموز';
+  $('greeting').textContent='سلام، '+(profile.full_name||'خوش آمدید')+' 👋';
+  if(profile.role==='teacher'){$('welcomeText').textContent='حضور و غیاب امروز کلاس را با دقت مدیریت کن.';$('teacherPanel').classList.remove('hidden');$('studentPanel').classList.add('hidden');await loadTeacher()}
+  else{$('welcomeText').textContent='سوابق و عملکرد حضور خودت را در یک نگاه ببین.';$('teacherPanel').classList.add('hidden');$('studentPanel').classList.remove('hidden');await loadStudent()}
+}
+async function logout(){const {error}=await client.auth.signOut();if(error){toast('خروج انجام نشد. دوباره امتحان کن.','error');return}showLogin()}
+function getStats(){const arr=[...draft.values()];return {total:students.length,present:arr.filter(x=>x.status==='present').length,absent:arr.filter(x=>x.status==='absent').length,other:arr.filter(x=>x.status==='late'||x.status==='excused').length}}
+function renderStats(){const s=getStats();$('totalCount').textContent=digits(s.total);$('presentCount').textContent=digits(s.present);$('absentCount').textContent=digits(s.absent);$('otherCount').textContent=digits(s.other);$('legendPresent').textContent=digits(s.present);$('legendAbsent').textContent=digits(s.absent);$('legendOther').textContent=digits(s.other);const pct=s.total?Math.round(s.present/s.total*100):0;$('teacherRate').textContent=digits(pct)+'٪';$('teacherRing').style.setProperty('--ring',(pct*3.6)+'deg')}
+async function loadTeacher(){
+  message('teacherMsg','در حال بارگذاری فهرست کلاس...');
+  const date=$('attendanceDate').value;if(!date){message('teacherMsg','تاریخ را انتخاب کن.','error');return}
+  const {data:roster,error:re}=await client.from('students').select('id,student_number,full_name,class_name').order('student_number');
+  if(re){message('teacherMsg','خطا در خواندن دانش‌آموزان: '+re.message,'error');return}
+  const {data:attendance,error:ae}=await client.from('attendance').select('student_id,status,note').eq('attendance_date',date);
+  if(ae){message('teacherMsg','خطا در خواندن وضعیت‌ها: '+ae.message,'error');return}
+  students=roster||[];lastLoadedDate=date;const registered=new Map((attendance||[]).map(a=>[a.student_id,a]));draft=new Map(students.map(s=>{const a=registered.get(s.id)||{};return [s.id,{status:a.status||'present',note:a.note||''}]}));dirty=false;renderRows();hide('teacherMsg')
+}
+function renderRows(){
+  const q=$('classFilter').value.trim().toLowerCase();const visible=students.filter(s=>!q||[s.full_name,s.class_name,s.student_number].some(v=>String(v||'').toLowerCase().includes(q)));
+  $('studentsBody').innerHTML=visible.length?visible.map(s=>{const a=draft.get(s.id)||{status:'present',note:''};const opts=Object.entries(names).map(([value,label])=>`<option value="${value}" ${a.status===value?'selected':''}>${label}</option>`).join('');return `<tr data-id="${esc(s.id)}"><td><div class="name-cell"><span class="name-avatar">${esc((s.full_name||'?').trim().slice(0,1))}</span><div><b>${esc(s.full_name)}</b><small>شماره ${esc(s.student_number||'—')} ${s.class_name?'· '+esc(s.class_name):''}</small></div></div></td><td><select class="status-select" aria-label="وضعیت ${esc(s.full_name)}">${opts}</select></td><td><input class="note-input" value="${esc(a.note)}" placeholder="یادداشت اختیاری" aria-label="یادداشت ${esc(s.full_name)}"></td></tr>`}).join(''):'<tr><td colspan="3" class="empty">دانش‌آموزی پیدا نشد.</td></tr>';renderStats()
+}
+$('studentsBody').addEventListener('change',e=>{const tr=e.target.closest('tr[data-id]');if(!tr)return;const a=draft.get(tr.dataset.id);if(!a)return;if(e.target.matches('.status-select')){a.status=e.target.value;dirty=true;renderStats()}});
+$('studentsBody').addEventListener('input',e=>{const tr=e.target.closest('tr[data-id]');if(!tr)return;const a=draft.get(tr.dataset.id);if(a&&e.target.matches('.note-input')){a.note=e.target.value;dirty=true}});
+function allPresent(){for(const a of draft.values())a.status='present';dirty=true;renderRows();toast('همه دانش‌آموزان روی «حاضر» قرار گرفتند؛ برای ثبت، ذخیره را بزن.')}
+async function saveTeacher(){
+  if(!user||profile?.role!=='teacher'||!students.length){message('teacherMsg','فهرست دانش‌آموزان بارگذاری نشده است.','error');return}
+  const date=$('attendanceDate').value;if(!date){message('teacherMsg','تاریخ را انتخاب کن.','error');return}
+  const records=students.map(s=>{const a=draft.get(s.id);return {student_id:s.id,attendance_date:date,status:a?.status||'present',note:a?.note||'',recorded_by:user.id}});
+  $('saveBtn').disabled=true;message('teacherMsg','در حال ذخیره اطلاعات...');
+  try{const {error}=await client.from('attendance').upsert(records,{onConflict:'student_id,attendance_date'});if(error)throw error;dirty=false;message('teacherMsg','✓ حضور و غیاب '+digits(students.length)+' دانش‌آموز با موفقیت ذخیره شد.','success');toast('حضور و غیاب با موفقیت ذخیره شد!')}
+  catch(e){message('teacherMsg','ذخیره انجام نشد: '+e.message,'error');toast('خطا در ذخیره اطلاعات','error')}
+  finally{$('saveBtn').disabled=false}
+}
+async function loadStudent(){
+  const {data:student,error:se}=await client.from('students').select('id,student_number,full_name,class_name').eq('user_id',user.id).maybeSingle();
+  if(se||!student){$('studentInfo').textContent='اتصال حساب دانش‌آموز به فهرست پیدا نشد.';$('myAttendance').innerHTML='<tr><td colspan="3" class="empty">اطلاعات این دانش‌آموز پیدا نشد.</td></tr>';return}
+  $('studentInfo').textContent='دانش‌آموز شماره '+student.student_number+' · '+student.full_name+(student.class_name?' · '+student.class_name:'');
+  const {data:rows,error}=await client.from('attendance').select('attendance_date,status,note').eq('student_id',student.id).order('attendance_date',{ascending:false});
+  if(error){$('myAttendance').innerHTML=`<tr><td colspan="3" class="empty">${esc(error.message)}</td></tr>`;return}
+  const a=rows||[],pres=a.filter(x=>x.status==='present').length,abs=a.filter(x=>x.status==='absent').length,rate=a.length?Math.round(pres/a.length*100):0;
+  $('daysCount').textContent=digits(a.length);$('myPresent').textContent=digits(pres);$('myAbsent').textContent=digits(abs);$('attendanceRate').textContent=digits(rate)+'٪';$('studentRingRate').textContent=digits(rate)+'٪';$('studentRing').style.setProperty('--ring',rate*3.6+'deg');$('studentProgress').style.width=rate+'%';
+  const colors={present:'#63d7c7',absent:'#ff849e',late:'#ffbe7c',excused:'#9198ff'};
+  $('myAttendance').innerHTML=a.length?a.map(r=>`<tr><td>${esc(r.attendance_date)}</td><td><span class="status-pill" style="--st-color:${colors[r.status]||'#9fc5ff'}">${esc(names[r.status]||r.status)}</span></td><td>${esc(r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>'
+}
+function exportCsv(){if(!students.length){toast('اول فهرست کلاس را بارگذاری کن.','error');return}const rows=[['شماره','نام','کلاس','وضعیت','یادداشت'],...students.map(s=>{const a=draft.get(s.id)||{};return [s.student_number,s.full_name,s.class_name,names[a.status]||a.status,a.note]})];const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download='sama-attendance-'+$('attendanceDate').value+'.csv';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('loginBtn').addEventListener('click',login);$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});$('logoutBtn').addEventListener('click',logout);
+$('loadBtn').addEventListener('click',()=>{if(dirty&&!confirm('تغییرات ذخیره‌نشده از دست می‌روند. بارگذاری مجدد انجام شود؟'))return;loadTeacher()});
+$('attendanceDate').addEventListener('change',()=>{if(dirty&&!confirm('تغییرات ذخیره‌نشده از دست می‌روند. تاریخ عوض شود؟')){$('attendanceDate').value=lastLoadedDate||nowDate();return}loadTeacher()});
+$('classFilter').addEventListener('input',renderRows);$('allPresentBtn').addEventListener('click',allPresent);$('saveBtn').addEventListener('click',saveTeacher);$('csvBtn').addEventListener('click',exportCsv);
+client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session?.user){user=data.session.user;try{await openApp()}catch(e){message('loginMsg','خطا در بازکردن پنل. صفحه را تازه کن.','error')}}});
+</script>
+</body></html>
