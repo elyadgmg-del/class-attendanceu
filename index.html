@@ -281,6 +281,48 @@ th,td {border-color:rgba(202,223,255,.12);}
 @media(max-width:900px){.login{grid-template-columns:1fr}.login .login-showcase{display:none}.login .login-form-panel{min-height:100svh;border-left:0;padding:22px}.login .login-form{max-width:520px}}
 @media(max-width:640px){.login .login-form{padding:25px}.login .logo-row{margin-bottom:28px}.login .login-form h1{font-size:32px}.login .login-form-panel{padding:18px}}
 </style>
+
+<style id="sama-report-studio">
+.report-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+.report-controls .field label{font-size:10px}
+.report-controls .field input,.report-controls .field select{min-height:43px;padding:9px 11px;font-size:11px}
+.report-quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.report-output{margin-top:18px;padding:24px;border-radius:22px}
+.report-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding-bottom:17px;border-bottom:1px solid var(--stroke)}
+.report-head h3{margin:0 0 7px;font-size:19px}.report-head p{margin:0;color:var(--soft);font-size:11px;line-height:2}
+.report-brand{display:flex;align-items:center;gap:11px}.report-brand-mark{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,#82caff,#8e83ff);color:#09152e;font-size:21px;font-weight:900}
+.report-meta{font-size:10px;color:var(--dim);text-align:left;line-height:2}
+.report-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.report-kpi{padding:14px;border-radius:14px;background:rgba(140,183,255,.08);border:1px solid var(--stroke)}
+.report-kpi small{display:block;color:var(--dim);font-size:10px}.report-kpi b{display:block;margin-top:6px;font-size:22px}
+.report-breakdown{display:grid;gap:10px;margin:18px 0}
+.report-break-row{display:grid;grid-template-columns:75px minmax(0,1fr) 55px;gap:10px;align-items:center;font-size:11px;color:var(--soft)}
+.report-break-track{height:10px;background:rgba(130,160,210,.13);border-radius:99px;overflow:hidden}
+.report-break-fill{height:100%;border-radius:99px}
+.report-table-title{font-size:13px;margin:20px 0 10px}
+.report-output table{min-width:0}
+.report-output th,.report-output td{font-size:10px;padding:10px 12px}
+.report-status{display:inline-block;padding:4px 9px;border-radius:99px;border:1px solid var(--stroke);font-size:10px}
+.report-actions{display:flex;gap:8px;justify-content:flex-end;margin-bottom:15px}
+.report-empty{padding:22px;text-align:center;border:1px dashed var(--stroke);border-radius:14px;color:var(--soft);font-size:12px}
+@media(max-width:850px){.report-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.report-controls{grid-template-columns:1fr}.report-head{flex-direction:column}.report-meta{text-align:right}.report-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.report-output{padding:15px}.report-actions{justify-content:stretch}.report-actions .btn{flex:1}}
+@page{size:A4;margin:12mm}
+@media print{
+  body *{visibility:hidden!important}
+  .print-report.active,.print-report.active *{visibility:visible!important}
+  .print-report.active{display:block!important;position:absolute!important;top:0!important;left:0!important;width:100%!important;margin:0!important;padding:8mm!important;border:0!important;border-radius:0!important;background:#fff!important;color:#172033!important;box-shadow:none!important;backdrop-filter:none!important}
+  .print-report.active *{color:#172033!important;text-shadow:none!important;box-shadow:none!important;backdrop-filter:none!important}
+  .print-report.active .no-print{display:none!important}
+  .print-report.active .report-brand-mark{background:#e8efff!important}
+  .print-report.active .report-kpi,.print-report.active .report-break-track{background:#f1f5fb!important;border-color:#dce4ef!important}
+  .print-report.active .report-break-fill{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .print-report.active table{width:100%!important;min-width:0!important;border-collapse:collapse!important}
+  .print-report.active th,.print-report.active td{border:1px solid #dce4ef!important;color:#172033!important}
+  .print-report.active thead{background:#edf2fa!important}
+}
+</style>
+
 </head>
 <body>
 <div class="scene"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
@@ -380,6 +422,21 @@ th,td {border-color:rgba(202,223,255,.12);}
           </section>
           <aside class="side-panel glass"><h3>خلاصه وضعیت کلاس</h3><p class="explainer">نمودار بر اساس وضعیت‌های انتخاب‌شده برای تاریخ جاری نمایش داده می‌شود.</p><div class="ring" id="teacherRing" style="--ring:0deg"><div class="ring-inner"><strong id="teacherRate">۰٪</strong><span>نرخ حضور</span></div></div><div class="legend"><div class="legend-row"><span><i class="legend-dot" style="--dot:#63d7c7"></i>حاضر</span><b id="legendPresent">۰</b></div><div class="legend-row"><span><i class="legend-dot" style="--dot:#ff849e"></i>غایب</span><b id="legendAbsent">۰</b></div><div class="legend-row"><span><i class="legend-dot" style="--dot:#818aff"></i>تأخیر و موجه</span><b id="legendOther">۰</b></div></div><div class="side-tip">برای ثبت قطعی، بعد از انتخاب وضعیت‌ها روی «ذخیره حضور و غیاب» بزن. وضعیت‌ها قبل از ذخیره فقط پیش‌نویس هستند.</div></aside>
         </div>
+
+        <section class="panel glass" style="margin-top:20px">
+          <div class="panel-header"><div><h3>کارنامه و گزارش دانش‌آموز</h3><p>گزارش بازه‌ای را از سوابق ذخیره‌شده در سامانه تهیه و چاپ کن.</p></div><span class="pill">گزارش معلم</span></div>
+          <div class="panel-body">
+            <div class="report-controls">
+              <div class="field"><label for="teacherReportStudent">انتخاب دانش‌آموز</label><select id="teacherReportStudent"><option value="">ابتدا فهرست را بارگذاری کن</option></select></div>
+              <div class="field"><label for="teacherReportFrom">از تاریخ</label><input type="date" id="teacherReportFrom"></div>
+              <div class="field"><label for="teacherReportTo">تا تاریخ</label><input type="date" id="teacherReportTo"></div>
+              <button id="teacherReportGenerate" class="btn btn-primary" type="button">تهیه کارنامه</button>
+            </div>
+            <div class="report-quick"><button id="teacherReportWeek" class="btn btn-secondary" type="button">۷ روز اخیر</button><button id="teacherReportMonth" class="btn btn-secondary" type="button">ماه جاری</button></div>
+            <div id="teacherReportMsg" class="notice hidden" style="margin-top:14px"></div>
+            <section id="teacherReportOutput" class="report-output glass print-report hidden" aria-live="polite"></section>
+          </div>
+        </section>
       </section>
       <section id="studentPanel" class="hidden">
         <section class="profile-card glass" aria-label="پروفایل دانش‌آموز">
@@ -402,6 +459,20 @@ th,td {border-color:rgba(202,223,255,.12);}
           <section class="panel glass"><div class="panel-header"><div><h3>کارنامه حضور و غیاب من</h3><p id="studentInfo">سوابق شخصی حساب شما</p></div><span class="pill">پنل دانش‌آموز</span></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr></thead><tbody id="myAttendance"><tr><td colspan="3" class="empty">در حال بارگذاری…</td></tr></tbody></table></div></div></section>
           <aside class="side-panel glass"><h3>روند حضور من</h3><p class="explainer">آمار شخصی از روزهایی که حضور و غیاب برای آن‌ها ثبت شده است.</p><div class="ring" id="studentRing" style="--ring:0deg"><div class="ring-inner"><strong id="studentRingRate">۰٪</strong><span>حضور</span></div></div><div class="progress-track"><span id="studentProgress" style="width:0%"></span></div><div class="side-tip">سوابق این بخش فقط متعلق به حساب دانش‌آموز واردشده است. تغییر سوابق فقط در اختیار معلم قرار دارد.</div></aside>
         </div>
+
+        <section class="panel glass" style="margin-top:20px">
+          <div class="panel-header"><div><h3>دریافت کارنامه شخصی</h3><p>سوابق خودت را در بازه دلخواه ببین و برای چاپ یا ذخیره PDF آماده کن.</p></div><span class="pill">گزارش دانش‌آموز</span></div>
+          <div class="panel-body">
+            <div class="report-controls" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+              <div class="field"><label for="studentReportFrom">از تاریخ</label><input type="date" id="studentReportFrom"></div>
+              <div class="field"><label for="studentReportTo">تا تاریخ</label><input type="date" id="studentReportTo"></div>
+              <button id="studentReportGenerate" class="btn btn-primary" type="button">تهیه کارنامه من</button>
+            </div>
+            <div class="report-quick"><button id="studentReportWeek" class="btn btn-secondary" type="button">۷ روز اخیر</button><button id="studentReportMonth" class="btn btn-secondary" type="button">ماه جاری</button></div>
+            <div id="studentReportMsg" class="notice hidden" style="margin-top:14px"></div>
+            <section id="studentReportOutput" class="report-output glass print-report hidden" aria-live="polite"></section>
+          </div>
+        </section>
       </section>
     </div>
   </main>
@@ -428,9 +499,10 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const names={present:'حاضر',absent:'غایب',late:'با تأخیر',excused:'موجه'};
 const digits=n=>Number(n).toLocaleString('fa-IR');
 const nowDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
-let user=null,profile=null,students=[],draft=new Map(),dirty=false,toastTimer=null,lastLoadedDate=null;
+let user=null,profile=null,students=[],draft=new Map(),dirty=false,toastTimer=null,lastLoadedDate=null,currentStudent=null;
 let qrStream=null,qrScanActive=false,qrFrameHandle=null,qrLastValue='',qrLastAt=0;
 $('attendanceDate').value=nowDate();
+initReportDates();
 $('todayLabel').textContent=new Intl.DateTimeFormat('fa-IR',{dateStyle:'full'}).format(new Date());
 function message(id,text,type=''){const el=$(id);el.textContent=text;el.className='notice'+(type?' '+type:'');el.classList.remove('hidden')}
 function hide(id){$(id).classList.add('hidden')}
@@ -460,6 +532,78 @@ async function logout(){const {error}=await client.auth.signOut();if(error){toas
 function getStats(){const arr=[...draft.values()];return {total:students.length,present:arr.filter(x=>x.status==='present').length,absent:arr.filter(x=>x.status==='absent').length,other:arr.filter(x=>x.status==='late'||x.status==='excused').length}}
 function renderStats(){const s=getStats();$('totalCount').textContent=digits(s.total);$('presentCount').textContent=digits(s.present);$('absentCount').textContent=digits(s.absent);$('otherCount').textContent=digits(s.other);$('legendPresent').textContent=digits(s.present);$('legendAbsent').textContent=digits(s.absent);$('legendOther').textContent=digits(s.other);const pct=s.total?Math.round(s.present/s.total*100):0;$('teacherRate').textContent=digits(pct)+'٪';$('teacherRing').style.setProperty('--ring',(pct*3.6)+'deg')}
 function dateKey(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function monthStart(){const d=new Date();d.setDate(1);return dateKey(d)}
+function setReportRange(prefix,kind){
+  const end=new Date();end.setHours(12,0,0,0);
+  const start=new Date(end);
+  if(kind==='week')start.setDate(start.getDate()-6);else start.setDate(1);
+  $(prefix+'From').value=dateKey(start);$(prefix+'To').value=dateKey(end);
+}
+function initReportDates(){setReportRange('teacherReport','month');setReportRange('studentReport','month')}
+function formatReportDate(value){
+  if(!value)return '—';
+  const d=new Date(value+'T12:00:00');
+  return Number.isNaN(d.getTime())?value:new Intl.DateTimeFormat('fa-IR',{dateStyle:'medium'}).format(d);
+}
+function fillTeacherReportStudents(){
+  const select=$('teacherReportStudent');
+  if(!select)return;
+  select.innerHTML=students.length?students.map(s=>`<option value="${esc(s.id)}">${esc(s.full_name)}${s.student_number?' · '+esc(s.student_number):''}</option>`).join(''):'<option value="">دانش‌آموزی موجود نیست</option>';
+}
+function renderReport(targetId,student,rows,from,to){
+  const target=$(targetId);
+  const counts={present:0,absent:0,late:0,excused:0};
+  (rows||[]).forEach(r=>{if(Object.prototype.hasOwnProperty.call(counts,r.status))counts[r.status]++});
+  const total=(rows||[]).length,rate=total?Math.round(counts.present/total*100):0;
+  const items=[['حاضر',counts.present,'#22b99b'],['غایب',counts.absent,'#e76588'],['با تأخیر',counts.late,'#e8a34e'],['موجه',counts.excused,'#8278ed']];
+  const chart=items.map(([label,count,color])=>`<div class="report-break-row"><span>${label}</span><div class="report-break-track"><div class="report-break-fill" style="width:${total?Math.round(count/total*100):0}%;background:${color}"></div></div><b>${digits(count)}</b></div>`).join('');
+  const body=total?(rows||[]).map(r=>`<tr><td>${esc(formatReportDate(r.attendance_date))}</td><td><span class="report-status">${esc(names[r.status]||r.status||'نامشخص')}</span></td><td>${esc(r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">در این بازه سابقه‌ای ثبت نشده است.</td></tr>';
+  const generated=new Intl.DateTimeFormat('fa-IR',{dateStyle:'medium',timeStyle:'short'}).format(new Date());
+  target.innerHTML=`
+    <div class="report-actions no-print"><button class="btn btn-primary" type="button" data-report-print="${targetId}">چاپ / ذخیره PDF</button><button class="btn btn-secondary" type="button" data-report-close="${targetId}">بستن گزارش</button></div>
+    <div class="report-head"><div class="report-brand"><div class="report-brand-mark">س</div><div><h3>هنرستان سما | کارنامه حضور و غیاب</h3><p>${esc(student.full_name)} · شماره دانش‌آموزی: ${esc(student.student_number||'—')} · کلاس: ${esc(student.class_name||'ثبت نشده')}</p></div></div><div class="report-meta">بازه گزارش<br>${esc(formatReportDate(from))} تا ${esc(formatReportDate(to))}<br>تاریخ تهیه: ${esc(generated)}</div></div>
+    <div class="report-kpis">
+      <div class="report-kpi"><small>کل سوابق</small><b>${digits(total)}</b></div>
+      <div class="report-kpi"><small>حضور</small><b>${digits(counts.present)}</b></div>
+      <div class="report-kpi"><small>غیبت</small><b>${digits(counts.absent)}</b></div>
+      <div class="report-kpi"><small>درصد حضور</small><b>${digits(rate)}٪</b></div>
+    </div>
+    <h4 class="report-table-title">تحلیل وضعیت‌ها</h4><div class="report-breakdown">${chart}</div>
+    <h4 class="report-table-title">جزئیات روزانه</h4>
+    <div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr></thead><tbody>${body}</tbody></table></div>
+    <p style="font-size:9px;color:var(--dim);margin-top:16px;line-height:2">این گزارش بر اساس سوابق ذخیره‌شده در سامانه حضور و غیاب هنرستان سما تهیه شده است.</p>`;
+  target.classList.remove('hidden');target.classList.add('active');
+}
+async function generateTeacherReport(){
+  if(profile?.role!=='teacher')return;
+  const studentId=$('teacherReportStudent').value,from=$('teacherReportFrom').value,to=$('teacherReportTo').value;
+  if(!studentId){message('teacherReportMsg','ابتدا یک دانش‌آموز انتخاب کن.','error');return}
+  if(!from||!to||from>to){message('teacherReportMsg','بازه تاریخ را درست انتخاب کن.','error');return}
+  const student=students.find(s=>String(s.id)===String(studentId));
+  if(!student){message('teacherReportMsg','دانش‌آموز در فهرست فعلی پیدا نشد.','error');return}
+  $('teacherReportGenerate').disabled=true;message('teacherReportMsg','در حال دریافت سوابق از Supabase...');
+  try{
+    const {data,error}=await client.from('attendance').select('attendance_date,status,note').eq('student_id',studentId).gte('attendance_date',from).lte('attendance_date',to).order('attendance_date',{ascending:false});
+    if(error)throw error;
+    renderReport('teacherReportOutput',student,data||[],from,to);hide('teacherReportMsg');
+  }catch(e){message('teacherReportMsg','تهیه گزارش انجام نشد: '+e.message,'error')}
+  finally{$('teacherReportGenerate').disabled=false}
+}
+async function generateStudentReport(){
+  if(profile?.role!=='student'||!currentStudent){message('studentReportMsg','اطلاعات دانش‌آموز در دسترس نیست.','error');return}
+  const from=$('studentReportFrom').value,to=$('studentReportTo').value;
+  if(!from||!to||from>to){message('studentReportMsg','بازه تاریخ را درست انتخاب کن.','error');return}
+  $('studentReportGenerate').disabled=true;message('studentReportMsg','در حال دریافت سوابق شخصی از Supabase...');
+  try{
+    const {data,error}=await client.from('attendance').select('attendance_date,status,note').eq('student_id',currentStudent.id).gte('attendance_date',from).lte('attendance_date',to).order('attendance_date',{ascending:false});
+    if(error)throw error;
+    renderReport('studentReportOutput',currentStudent,data||[],from,to);hide('studentReportMsg');
+  }catch(e){message('studentReportMsg','تهیه گزارش انجام نشد: '+e.message,'error')}
+  finally{$('studentReportGenerate').disabled=false}
+}
+function printReport(targetId){const target=$(targetId);if(!target||!target.classList.contains('active'))return;window.print()}
+function closeReport(targetId){const target=$(targetId);if(target){target.classList.remove('active');target.classList.add('hidden')}}
+
 function renderAnalytics(rows){
   const statusCount={present:0,absent:0,other:0};
   for(const r of rows){if(r.status==='present')statusCount.present++;else if(r.status==='absent')statusCount.absent++;else statusCount.other++}
@@ -483,7 +627,7 @@ async function loadTeacher(){
   if(re){message('teacherMsg','خطا در خواندن دانش‌آموزان: '+re.message,'error');return}
   const {data:attendance,error:ae}=await client.from('attendance').select('student_id,status,note').eq('attendance_date',date);
   if(ae){message('teacherMsg','خطا در خواندن وضعیت‌ها: '+ae.message,'error');return}
-  students=roster||[];lastLoadedDate=date;const registered=new Map((attendance||[]).map(a=>[a.student_id,a]));draft=new Map(students.map(s=>{const a=registered.get(s.id)||{};return [s.id,{status:a.status||'present',note:a.note||''}]}));dirty=false;renderRows();hide('teacherMsg');loadAnalytics()
+  students=roster||[];fillTeacherReportStudents();lastLoadedDate=date;const registered=new Map((attendance||[]).map(a=>[a.student_id,a]));draft=new Map(students.map(s=>{const a=registered.get(s.id)||{};return [s.id,{status:a.status||'present',note:a.note||''}]}));dirty=false;renderRows();hide('teacherMsg');loadAnalytics()
 }
 function renderRows(){
   const q=$('classFilter').value.trim().toLowerCase();const visible=students.filter(s=>!q||[s.full_name,s.class_name,s.student_number].some(v=>String(v||'').toLowerCase().includes(q)));
@@ -503,7 +647,8 @@ async function saveTeacher(){
 }
 async function loadStudent(){
   const {data:student,error:se}=await client.from('students').select('id,student_number,full_name,class_name').eq('user_id',user.id).maybeSingle();
-  if(se||!student){$('studentInfo').textContent='اتصال حساب دانش‌آموز به فهرست پیدا نشد.';$('myAttendance').innerHTML='<tr><td colspan="3" class="empty">اطلاعات این دانش‌آموز پیدا نشد.</td></tr>';return}
+  if(se||!student){currentStudent=null;$('studentInfo').textContent='اتصال حساب دانش‌آموز به فهرست پیدا نشد.';$('myAttendance').innerHTML='<tr><td colspan="3" class="empty">اطلاعات این دانش‌آموز پیدا نشد.</td></tr>';return}
+  currentStudent=student;
   $('studentInfo').textContent='دانش‌آموز شماره '+student.student_number+' · '+student.full_name+(student.class_name?' · '+student.class_name:'');$('profileFullName').textContent=student.full_name||'دانش‌آموز سما';$('profileAvatar').textContent=(student.full_name||'س').trim().slice(0,1);$('profileStudentNumber').textContent=student.student_number||'—';$('profileClass').textContent=student.class_name||'ثبت نشده';
   renderStudentQR(student);
   const {data:rows,error}=await client.from('attendance').select('attendance_date,status,note').eq('student_id',student.id).order('attendance_date',{ascending:false});
@@ -561,6 +706,18 @@ $('loadBtn').addEventListener('click',()=>{if(dirty&&!confirm('تغییرات ذ
 $('attendanceDate').addEventListener('change',()=>{if(dirty&&!confirm('تغییرات ذخیره‌نشده از دست می‌روند. تاریخ عوض شود؟')){$('attendanceDate').value=lastLoadedDate||nowDate();return}loadTeacher()});
 $('classFilter').addEventListener('input',renderRows);$('allPresentBtn').addEventListener('click',allPresent);$('saveBtn').addEventListener('click',saveTeacher);$('csvBtn').addEventListener('click',exportCsv);
 $('openScannerBtn').addEventListener('click',openScanner);$('closeScannerBtn').addEventListener('click',closeScanner);$('startScannerBtn').addEventListener('click',startScanner);$('stopScannerBtn').addEventListener('click',stopScanner);$('qrScannerModal').addEventListener('click',e=>{if(e.target.id==='qrScannerModal')closeScanner()});$('printQrBtn').addEventListener('click',()=>window.print());window.addEventListener('pagehide',stopScanner);
+
+$('teacherReportGenerate').addEventListener('click',generateTeacherReport);
+$('studentReportGenerate').addEventListener('click',generateStudentReport);
+$('teacherReportWeek').addEventListener('click',()=>setReportRange('teacherReport','week'));
+$('teacherReportMonth').addEventListener('click',()=>setReportRange('teacherReport','month'));
+$('studentReportWeek').addEventListener('click',()=>setReportRange('studentReport','week'));
+$('studentReportMonth').addEventListener('click',()=>setReportRange('studentReport','month'));
+document.addEventListener('click',e=>{
+  const print=e.target.closest('[data-report-print]');if(print){printReport(print.dataset.reportPrint);return}
+  const close=e.target.closest('[data-report-close]');if(close)closeReport(close.dataset.reportClose);
+});
+
 client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session?.user){user=data.session.user;try{await openApp()}catch(e){message('loginMsg','خطا در بازکردن پنل. صفحه را تازه کن.','error')}}});
 </script>
 </body></html>
