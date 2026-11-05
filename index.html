@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#090f21;--bg2:#0d1730;--glass:rgba(21,34,67,.62);--glass2:rgba(20,32,61,.8);--stroke:rgba(189,214,255,.12);--white:#f4f8ff;--soft:#a9bbdf;--dim:#7e91b6;--azure:#77b8ff;--indigo:#7a77ff;--teal:#58e0cc;--orange:#ffbe7c;--rose:#ff7fa7;--shadow:0 24px 70px rgba(0,0,0,.25)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--white);font-family:Vazirmatn,Tahoma,sans-serif;min-height:100vh;background:var(--bg)}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}.hidden{display:none!important}
@@ -89,6 +91,21 @@
 .analytics-empty{color:var(--dim);font-size:11px;text-align:center;padding:35px 8px}
 @media(max-width:900px){.analytics-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.profile-card{grid-template-columns:1fr;text-align:center;justify-items:center}.profile-meta{grid-template-columns:1fr}.chart-bars{gap:5px}.chart-day small{font-size:9px}}
+
+
+/* QR attendance extension */
+.qr-tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.qr-card{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:20px;border-radius:20px;background:linear-gradient(125deg,rgba(84,139,224,.13),rgba(69,207,193,.08));border:1px solid rgba(155,203,255,.17);margin-top:16px}
+.qr-card h3{margin:0 0 7px;font-size:14px}.qr-card p{margin:0;color:var(--soft);font-size:11px;line-height:2}
+.qr-image{background:#fff;border-radius:15px;padding:10px;min-width:130px;min-height:130px;display:grid;place-items:center}.qr-image img,.qr-image canvas{max-width:110px;height:auto!important}
+.qr-modal{position:fixed;inset:0;z-index:30;background:rgba(3,8,20,.82);backdrop-filter:blur(14px);display:grid;place-items:center;padding:18px}
+.qr-dialog{width:min(560px,100%);padding:22px;border-radius:24px;background:#111e3a;border:1px solid rgba(178,215,255,.2);box-shadow:0 25px 90px #0009}
+.qr-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.qr-dialog h3{margin:0;font-size:16px}.qr-dialog p{font-size:11px;line-height:2;color:#a9bbdf}
+.qr-video-wrap{position:relative;background:#050a15;border-radius:18px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center}
+#qrVideo{width:100%;height:100%;object-fit:cover}.qr-frame{position:absolute;width:58%;height:58%;border:2px solid #6ce4d1;border-radius:20px;box-shadow:0 0 0 999px rgba(0,0,0,.17),0 0 25px #56e5d1aa;pointer-events:none}
+.qr-result{margin-top:13px;min-height:44px;padding:11px 13px;border-radius:13px;background:#ffffff0b;color:#c8dcff;font-size:12px;line-height:1.8}
+@media(max-width:640px){.qr-card{grid-template-columns:1fr;justify-items:center;text-align:center}.qr-card .qr-tools{justify-content:center}.qr-dialog{padding:15px}}
+@media print{body *{visibility:hidden}.qr-card,.qr-card *{visibility:visible}.qr-card{position:absolute;inset:0;background:white;color:#111;border:0;box-shadow:none}.qr-card p{color:#333}}
 
 </style>
 <style>
@@ -356,7 +373,7 @@ th,td {border-color:rgba(202,223,255,.12);}
             <div class="panel-header"><div><h3>لیست حضور و غیاب</h3><p>انتخاب وضعیت دانش‌آموزان و ثبت برای تاریخ موردنظر</p></div><span class="pill">پنل معلم</span></div>
             <div class="panel-body">
               <div class="filters"><div class="field"><label for="attendanceDate">تاریخ</label><input type="date" id="attendanceDate"></div><div class="field"><label for="classFilter">جست‌وجوی دانش‌آموز</label><input id="classFilter" placeholder="نام، شماره یا کلاس را بنویس"></div></div>
-              <div class="action-row"><button id="saveBtn" class="btn btn-primary"><svg class="icon"><use href="#i-check"/></svg>ذخیره حضور و غیاب</button><button id="loadBtn" class="btn btn-secondary"><svg class="icon"><use href="#i-refresh"/></svg>بارگذاری مجدد</button><button id="allPresentBtn" class="btn btn-secondary">همه حاضر</button><button id="csvBtn" class="btn btn-secondary"><svg class="icon"><use href="#i-download"/></svg>خروجی CSV</button></div>
+              <div class="action-row"><button id="saveBtn" class="btn btn-primary"><svg class="icon"><use href="#i-check"/></svg>ذخیره حضور و غیاب</button><button id="loadBtn" class="btn btn-secondary"><svg class="icon"><use href="#i-refresh"/></svg>بارگذاری مجدد</button><button id="allPresentBtn" class="btn btn-secondary">همه حاضر</button><button id="csvBtn" class="btn btn-secondary"><svg class="icon"><use href="#i-download"/></svg>خروجی CSV</button><button id="openScannerBtn" class="btn btn-teal" type="button">▦ اسکن QR دانش‌آموز</button></div>
               <div id="teacherMsg" class="notice hidden" style="margin-bottom:15px"></div>
               <div class="table-wrap"><table><thead><tr><th>دانش‌آموز</th><th>وضعیت</th><th>یادداشت</th></tr></thead><tbody id="studentsBody"><tr><td colspan="3" class="empty">در حال بارگذاری…</td></tr></tbody></table></div>
             </div>
@@ -374,6 +391,7 @@ th,td {border-color:rgba(202,223,255,.12);}
             <div><small>نوع حساب</small><b>دانش‌آموز</b></div>
           </div>
         </section>
+        <section class="qr-card" aria-label="کد حضور و غیاب دانش‌آموز"><div><h3>کارت حضور و غیاب من</h3><p>این کد را هنگام ورود به کلاس به معلم نشان بده تا با اسکن آن وضعیتت در فهرست حضور و غیاب علامت‌گذاری شود.</p><div class="qr-tools"><button id="printQrBtn" class="btn btn-secondary" type="button">چاپ کارت QR</button></div></div><div id="studentQr" class="qr-image" aria-label="کد QR اختصاصی"></div></section>
         <div class="overview">
           <div class="stat-card glass" style="--glow:rgba(112,168,255,.24);--icon-bg:rgba(112,168,255,.12);--icon-color:#9bc8ff"><div class="overline">روزهای ثبت‌شده<span class="symbol"><svg class="icon"><use href="#i-calendar"/></svg></span></div><strong id="daysCount" class="value">۰</strong><span class="footnote">کل سوابق</span></div>
           <div class="stat-card glass" style="--glow:rgba(75,233,169,.2);--icon-bg:rgba(75,233,169,.1);--icon-color:#7cecc1"><div class="overline">حضور<span class="symbol"><svg class="icon"><use href="#i-check"/></svg></span></div><strong id="myPresent" class="value">۰</strong><span class="footnote">روز حاضر</span></div>
@@ -388,6 +406,17 @@ th,td {border-color:rgba(202,223,255,.12);}
     </div>
   </main>
 </section>
+
+<div id="qrScannerModal" class="qr-modal hidden" role="dialog" aria-modal="true" aria-labelledby="qrDialogTitle">
+  <div class="qr-dialog">
+    <div class="qr-dialog-head"><h3 id="qrDialogTitle">اسکن کد حضور دانش‌آموز</h3><button id="closeScannerBtn" class="btn btn-secondary" type="button">بستن ✕</button></div>
+    <p>دوربین را مقابل QR دانش‌آموز بگیر. پس از شناسایی، وضعیت او در پیش‌نویس «حاضر» می‌شود؛ برای ثبت نهایی حتماً دکمه ذخیره حضور و غیاب را بزن.</p>
+    <div class="qr-video-wrap"><video id="qrVideo" playsinline muted></video><div class="qr-frame"></div></div>
+    <div id="qrScanResult" class="qr-result">برای شروع، اجازه دسترسی دوربین را تأیید کن.</div>
+    <div class="qr-tools"><button id="startScannerBtn" class="btn btn-primary" type="button">شروع دوربین</button><button id="stopScannerBtn" class="btn btn-secondary" type="button">توقف دوربین</button></div>
+  </div>
+</div>
+
 <script>
 'use strict';
 const SUPABASE_URL='https://gmhidwihvrpnqpxrroen.supabase.co';
@@ -400,6 +429,7 @@ const names={present:'حاضر',absent:'غایب',late:'با تأخیر',excused
 const digits=n=>Number(n).toLocaleString('fa-IR');
 const nowDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 let user=null,profile=null,students=[],draft=new Map(),dirty=false,toastTimer=null,lastLoadedDate=null;
+let qrStream=null,qrScanActive=false,qrFrameHandle=null,qrLastValue='',qrLastAt=0;
 $('attendanceDate').value=nowDate();
 $('todayLabel').textContent=new Intl.DateTimeFormat('fa-IR',{dateStyle:'full'}).format(new Date());
 function message(id,text,type=''){const el=$(id);el.textContent=text;el.className='notice'+(type?' '+type:'');el.classList.remove('hidden')}
@@ -475,6 +505,7 @@ async function loadStudent(){
   const {data:student,error:se}=await client.from('students').select('id,student_number,full_name,class_name').eq('user_id',user.id).maybeSingle();
   if(se||!student){$('studentInfo').textContent='اتصال حساب دانش‌آموز به فهرست پیدا نشد.';$('myAttendance').innerHTML='<tr><td colspan="3" class="empty">اطلاعات این دانش‌آموز پیدا نشد.</td></tr>';return}
   $('studentInfo').textContent='دانش‌آموز شماره '+student.student_number+' · '+student.full_name+(student.class_name?' · '+student.class_name:'');$('profileFullName').textContent=student.full_name||'دانش‌آموز سما';$('profileAvatar').textContent=(student.full_name||'س').trim().slice(0,1);$('profileStudentNumber').textContent=student.student_number||'—';$('profileClass').textContent=student.class_name||'ثبت نشده';
+  renderStudentQR(student);
   const {data:rows,error}=await client.from('attendance').select('attendance_date,status,note').eq('student_id',student.id).order('attendance_date',{ascending:false});
   if(error){$('myAttendance').innerHTML=`<tr><td colspan="3" class="empty">${esc(error.message)}</td></tr>`;return}
   const a=rows||[],pres=a.filter(x=>x.status==='present').length,abs=a.filter(x=>x.status==='absent').length,rate=a.length?Math.round(pres/a.length*100):0;
@@ -482,11 +513,54 @@ async function loadStudent(){
   const colors={present:'#63d7c7',absent:'#ff849e',late:'#ffbe7c',excused:'#9198ff'};
   $('myAttendance').innerHTML=a.length?a.map(r=>`<tr><td>${esc(r.attendance_date)}</td><td><span class="status-pill" style="--st-color:${colors[r.status]||'#9fc5ff'}">${esc(names[r.status]||r.status)}</span></td><td>${esc(r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>'
 }
+function renderStudentQR(student){
+  const target=$('studentQr');target.innerHTML='';
+  if(!window.QRCode){target.textContent='کتابخانه QR بارگذاری نشد.';return}
+  const payload='SAMA-ATTENDANCE:'+student.id;
+  new QRCode(target,{text:payload,width:110,height:110,colorDark:'#101a30',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+}
+function openScanner(){
+  if(profile?.role!=='teacher'){toast('فقط حساب معلم می‌تواند QR را اسکن کند.','error');return}
+  $('qrScannerModal').classList.remove('hidden');$('qrScanResult').textContent='برای شروع، دکمه شروع دوربین را بزن.';
+}
+async function startScanner(){
+  if(!navigator.mediaDevices?.getUserMedia){$('qrScanResult').textContent='دوربین در این مرورگر یا نشانی در دسترس نیست. سایت باید با HTTPS باز شود.';return}
+  if(!window.jsQR){$('qrScanResult').textContent='ابزار تشخیص QR بارگذاری نشد؛ اتصال اینترنت را بررسی کن.';return}
+  stopScanner();
+  try{
+    qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    const video=$('qrVideo');video.srcObject=qrStream;await video.play();qrScanActive=true;$('qrScanResult').textContent='دوربین فعال است؛ QR دانش‌آموز را داخل کادر بگیر.';scanQRFrame();
+  }catch(err){$('qrScanResult').textContent='دسترسی دوربین داده نشد یا دوربین در دسترس نیست. از HTTPS و مجوز دوربین استفاده کن.'}
+}
+function scanQRFrame(){
+  if(!qrScanActive)return;
+  const video=$('qrVideo');
+  if(video.readyState>=2){
+    const canvas=scanQRFrame.canvas||(scanQRFrame.canvas=document.createElement('canvas'));
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+    if(canvas.width&&canvas.height){ctx.drawImage(video,0,0,canvas.width,canvas.height);const image=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(image.data,image.width,image.height,{inversionAttempts:'dontInvert'});if(code?.data)handleScannedQR(code.data)}
+  }
+  qrFrameHandle=requestAnimationFrame(scanQRFrame);
+}
+function handleScannedQR(value){
+  const prefix='SAMA-ATTENDANCE:';
+  if(!value.startsWith(prefix)){$('qrScanResult').textContent='این کد متعلق به سامانه حضور و غیاب سما نیست.';return}
+  const id=value.slice(prefix.length).trim();const student=students.find(s=>String(s.id)===id);
+  if(!student){$('qrScanResult').textContent='دانش‌آموز در فهرست بارگذاری‌شده پیدا نشد. فهرست کلاس را تازه‌سازی کن.';return}
+  const now=Date.now();if(qrLastValue===id&&now-qrLastAt<2500)return;qrLastValue=id;qrLastAt=now;
+  const entry=draft.get(id);if(!entry){$('qrScanResult').textContent='برای این دانش‌آموز پیش‌نویس حضور وجود ندارد.';return}
+  entry.status='present';entry.note=[entry.note,'ثبت با QR'].filter(Boolean).join(' | ');dirty=true;renderRows();
+  $('qrScanResult').textContent='✓ '+student.full_name+' شناسایی شد و در پیش‌نویس «حاضر» قرار گرفت. برای ثبت نهایی، ذخیره حضور و غیاب را بزن.';
+  toast('QR دانش‌آموز '+student.full_name+' شناسایی شد.');
+}
+function stopScanner(){qrScanActive=false;if(qrFrameHandle)cancelAnimationFrame(qrFrameHandle);qrFrameHandle=null;if(qrStream){qrStream.getTracks().forEach(track=>track.stop());qrStream=null}$('qrVideo').srcObject=null}
+function closeScanner(){stopScanner();$('qrScannerModal').classList.add('hidden')}
 function exportCsv(){if(!students.length){toast('اول فهرست کلاس را بارگذاری کن.','error');return}const rows=[['شماره','نام','کلاس','وضعیت','یادداشت'],...students.map(s=>{const a=draft.get(s.id)||{};return [s.student_number,s.full_name,s.class_name,names[a.status]||a.status,a.note]})];const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download='sama-attendance-'+$('attendanceDate').value+'.csv';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('loginBtn').addEventListener('click',login);$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});$('logoutBtn').addEventListener('click',logout);
 $('loadBtn').addEventListener('click',()=>{if(dirty&&!confirm('تغییرات ذخیره‌نشده از دست می‌روند. بارگذاری مجدد انجام شود؟'))return;loadTeacher()});
 $('attendanceDate').addEventListener('change',()=>{if(dirty&&!confirm('تغییرات ذخیره‌نشده از دست می‌روند. تاریخ عوض شود؟')){$('attendanceDate').value=lastLoadedDate||nowDate();return}loadTeacher()});
 $('classFilter').addEventListener('input',renderRows);$('allPresentBtn').addEventListener('click',allPresent);$('saveBtn').addEventListener('click',saveTeacher);$('csvBtn').addEventListener('click',exportCsv);
+$('openScannerBtn').addEventListener('click',openScanner);$('closeScannerBtn').addEventListener('click',closeScanner);$('startScannerBtn').addEventListener('click',startScanner);$('stopScannerBtn').addEventListener('click',stopScanner);$('qrScannerModal').addEventListener('click',e=>{if(e.target.id==='qrScannerModal')closeScanner()});$('printQrBtn').addEventListener('click',()=>window.print());window.addEventListener('pagehide',stopScanner);
 client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session?.user){user=data.session.user;try{await openApp()}catch(e){message('loginMsg','خطا در بازکردن پنل. صفحه را تازه کن.','error')}}});
 </script>
 </body></html>
