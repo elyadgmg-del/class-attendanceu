@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a1024">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="هنرستان سما">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0a1024">
 <title>هنرستان سما | سامانه حضور و غیاب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -107,6 +115,13 @@
 @media(max-width:640px){.qr-card{grid-template-columns:1fr;justify-items:center;text-align:center}.qr-card .qr-tools{justify-content:center}.qr-dialog{padding:15px}}
 @media print{body *{visibility:hidden}.qr-card,.qr-card *{visibility:visible}.qr-card{position:absolute;inset:0;background:white;color:#111;border:0;box-shadow:none}.qr-card p{color:#333}}
 
+
+/* PWA install controls */
+.install-app-btn{width:100%;margin-top:12px;border-color:rgba(119,184,255,.28);background:linear-gradient(110deg,rgba(119,184,255,.13),rgba(122,119,255,.12));color:#dceaff}
+.install-app-btn:hover{background:linear-gradient(110deg,rgba(119,184,255,.22),rgba(122,119,255,.20))}
+.install-app-top{width:auto;margin:0;min-height:40px;padding:8px 12px;font-size:11px}
+@media(max-width:720px){.install-app-top span{display:none}.install-app-top{width:40px;padding:8px;min-width:40px}.top-actions{gap:6px}}
+@media(min-width:721px){.install-app-top{display:inline-flex}}
 </style>
 <style>
 /* SAMA Aurora Glass — visual enhancement for the existing attendance app.
@@ -377,6 +392,9 @@ th,td {border-color:rgba(202,223,255,.12);}
         <div class="field"><label for="username">نام کاربری یا ایمیل</label><input id="username" autocomplete="username" placeholder="مثلاً student22 یا ایمیل معلم" /></div>
         <div class="field"><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" placeholder="رمز عبور حساب" /></div>
         <button id="loginBtn" class="btn btn-primary" type="button">ورود به داشبورد <svg class="icon"><use href="#i-out"/></svg></button>
+        <button id="installAppBtn" class="btn btn-secondary install-app-btn" type="button">
+          <svg class="icon"><use href="#i-download"/></svg> نصب اپلیکیشن سما
+        </button>
       </div>
       <div id="loginMsg" class="notice hidden" style="margin-top:18px"></div>
       <div class="login-security"><span><i class="status-glow"></i> اتصال امن به سامانه</span><span>پنل معلم و دانش‌آموز</span></div>
@@ -412,7 +430,7 @@ th,td {border-color:rgba(202,223,255,.12);}
     <div class="sidebar-bottom"><div class="school-info"><b>✦ هنرستان سما</b><p>نسخه تازه با طراحی اختصاصی و اتصال به سامانه اصلی حضور و غیاب.</p></div></div>
   </aside>
   <main class="main">
-    <header class="topbar"><div><h1>داشبورد هنرستان سما</h1><p>سامانه هوشمند حضور و غیاب</p></div><div class="top-actions"><div class="user-chip"><span class="avatar">س</span><span><b id="userName">کاربر</b><small id="userRole">حساب</small></span></div><button id="logoutBtn" class="icon-button" type="button" aria-label="خروج از حساب" title="خروج"><svg class="icon"><use href="#i-out"/></svg></button></div></header>
+    <header class="topbar"><div><h1>داشبورد هنرستان سما</h1><p>سامانه هوشمند حضور و غیاب</p></div><div class="top-actions"><button id="installAppBtnTop" class="btn btn-secondary install-app-btn install-app-top" type="button" title="نصب اپلیکیشن سما"><svg class="icon"><use href="#i-download"/></svg><span>نصب اپلیکیشن</span></button><div class="user-chip"><span class="avatar">س</span><span><b id="userName">کاربر</b><small id="userRole">حساب</small></span></div><button id="logoutBtn" class="icon-button" type="button" aria-label="خروج از حساب" title="خروج"><svg class="icon"><use href="#i-out"/></svg></button></div></header>
     <div class="content">
       <section class="dash-hero"><div><div class="kicker">✦ یک روز تازه در سما</div><h2 id="greeting">سلام، خوش آمدید 👋</h2><p id="welcomeText">به سامانه خوش آمدید.</p></div><div class="date-badge"><svg class="icon"><use href="#i-calendar"/></svg><span id="todayLabel">امروز</span></div></section>
       <section id="teacherPanel" class="hidden">
@@ -937,5 +955,64 @@ $('adminProfilesBody').addEventListener('change',e=>{
 });
 
 client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session?.user){user=data.session.user;try{await openApp()}catch(e){message('loginMsg','خطا در بازکردن پنل. صفحه را تازه کن.','error')}}});
+
+// SAMA SMART PWA: install prompt + offline app shell
+let samaDeferredInstallPrompt = null;
+const samaInstallButtons = () => [document.getElementById('installAppBtn'), document.getElementById('installAppBtnTop')].filter(Boolean);
+
+function samaIsInstalled(){
+  return window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function samaSetInstallButtonState(){
+  const installed = samaIsInstalled();
+  samaInstallButtons().forEach(btn => {
+    btn.classList.toggle('hidden', installed);
+    btn.setAttribute('aria-label', 'نصب اپلیکیشن هنرستان سما');
+  });
+}
+async function samaInstallApp(){
+  if (samaDeferredInstallPrompt) {
+    const promptEvent = samaDeferredInstallPrompt;
+    samaDeferredInstallPrompt = null;
+    try {
+      await promptEvent.prompt();
+      const result = await promptEvent.userChoice;
+      if (result?.outcome === 'accepted') toast('درخواست نصب اپلیکیشن سما پذیرفته شد.');
+      else toast('نصب اپلیکیشن لغو شد.');
+    } catch (e) {
+      alert('برای نصب، از منوی مرورگر گزینه Install app یا Add to Home Screen را انتخاب کن.');
+    }
+    return;
+  }
+  const ua = navigator.userAgent || '';
+  let guide;
+  if (/iphone|ipad|ipod/i.test(ua) && !window.MSStream) {
+    guide = 'برای نصب روی آیفون: در Safari دکمه Share را بزن، سپس Add to Home Screen را انتخاب کن.';
+  } else if (/android/i.test(ua)) {
+    guide = 'برای نصب روی اندروید: منوی سه‌نقطه Chrome را باز کن و Install app یا Add to Home screen را بزن.';
+  } else {
+    guide = 'برای نصب روی لپ‌تاپ: در Chrome منوی سه‌نقطه را باز کن و گزینه Install page as app را انتخاب کن. در Edge از منوی Apps گزینه Install this site as an app را بزن.';
+  }
+  alert(guide);
+}
+samaInstallButtons().forEach(btn => btn.addEventListener('click', samaInstallApp));
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  samaDeferredInstallPrompt = event;
+});
+window.addEventListener('appinstalled', () => {
+  samaDeferredInstallPrompt = null;
+  samaSetInstallButtonState();
+  if (typeof toast === 'function') toast('اپلیکیشن هنرستان سما نصب شد. خوش آمدی!');
+});
+samaSetInstallButtonState();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', {scope: './'})
+      .then(() => console.info('SAMA PWA service worker ready'))
+      .catch(err => console.warn('SAMA PWA service worker registration failed:', err));
+  });
+}
+
 </script>
 </body></html>
