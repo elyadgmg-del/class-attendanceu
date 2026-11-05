@@ -321,6 +321,29 @@ th,td {border-color:rgba(202,223,255,.12);}
   .print-report.active th,.print-report.active td{border:1px solid #dce4ef!important;color:#172033!important}
   .print-report.active thead{background:#edf2fa!important}
 }
+
+/* SAMA admin console */
+.admin-overview{margin-bottom:20px}
+.admin-panel-card{margin-top:20px}
+.admin-form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+.admin-form-grid .field{margin:0;min-width:0}
+.admin-form-grid input,.admin-form-grid select,.admin-search{
+  width:100%;min-width:0;border:1px solid var(--stroke);border-radius:13px;
+  background:rgba(8,17,38,.72);color:var(--white);padding:12px 14px;outline:none
+}
+.admin-form-grid input:focus,.admin-form-grid select:focus,.admin-search:focus{border-color:var(--azure);box-shadow:0 0 0 3px rgba(119,184,255,.12)}
+.admin-form-grid select option{background:#111d38;color:white}
+.admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:15px 0}
+.admin-search{max-width:320px;margin-right:auto}
+.admin-table-actions{display:flex;gap:7px;flex-wrap:wrap}
+.admin-mini-btn{border:1px solid var(--stroke);border-radius:10px;background:rgba(255,255,255,.07);color:var(--white);padding:7px 10px;font-size:12px}
+.admin-mini-btn.danger{border-color:rgba(255,127,167,.3);color:#ffabc2}
+.admin-role-select{background:#101c36;color:var(--white);border:1px solid var(--stroke);border-radius:10px;padding:8px;max-width:150px}
+.admin-hint{color:var(--dim);font-size:12px;line-height:2;margin:14px 0 0}
+.admin-id{direction:ltr;unicode-bidi:plaintext;font-size:11px;color:var(--dim)}
+.admin-status{display:inline-block;padding:5px 9px;border-radius:30px;background:rgba(119,184,255,.12);color:#b9d9ff;font-size:11px}
+@media(max-width:1000px){.admin-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.admin-form-grid{grid-template-columns:1fr}.admin-search{max-width:none;width:100%}.admin-actions>.btn{flex:1}}
 </style>
 
 </head>
@@ -474,6 +497,58 @@ th,td {border-color:rgba(202,223,255,.12);}
           </div>
         </section>
       </section>
+
+      <section id="adminPanel" class="hidden">
+        <div class="overview admin-overview">
+          <div class="stat-card glass"><div class="overline">کل هنرجویان</div><strong id="adminStudentCount" class="value">۰</strong><span class="footnote">فهرست ثبت‌شده</span></div>
+          <div class="stat-card glass"><div class="overline">حساب‌های معلم</div><strong id="adminTeacherCount" class="value">۰</strong><span class="footnote">پروفایل معلم</span></div>
+          <div class="stat-card glass"><div class="overline">کلاس‌های فعال</div><strong id="adminClassCount" class="value">۰</strong><span class="footnote">بر اساس کلاس هنرجویان</span></div>
+          <div class="stat-card glass"><div class="overline">سوابق حضور</div><strong id="adminAttendanceCount" class="value">۰</strong><span class="footnote">سوابق دریافت‌شده</span></div>
+        </div>
+
+        <section class="panel glass admin-panel-card">
+          <div class="panel-header"><div><h3>مدیریت هنرجویان</h3><p>افزودن، ویرایش، جست‌وجو و حذف رکورد هنرجویان در جدول students</p></div><span class="pill">مدیریت اطلاعات</span></div>
+          <div class="panel-body">
+            <div class="admin-form-grid">
+              <input type="hidden" id="adminStudentId">
+              <div class="field"><label for="adminStudentName">نام و نام خانوادگی</label><input id="adminStudentName" placeholder="نام هنرجو"></div>
+              <div class="field"><label for="adminStudentNumber">شماره هنرجویی</label><input id="adminStudentNumber" placeholder="مثلاً ۱۴۰۵۰۱"></div>
+              <div class="field"><label for="adminStudentClass">کلاس</label><input id="adminStudentClass" placeholder="مثلاً دوازدهم کامپیوتر"></div>
+              <div class="field"><label for="adminStudentUserId">شناسه کاربری Supabase (اختیاری)</label><input id="adminStudentUserId" placeholder="UUID حساب Auth"></div>
+            </div>
+            <div class="admin-actions">
+              <button id="adminStudentSave" class="btn btn-primary" type="button">ذخیره هنرجو</button>
+              <button id="adminStudentCancel" class="btn btn-secondary" type="button">پاک‌کردن فرم</button>
+              <input id="adminStudentSearch" class="admin-search" placeholder="جست‌وجوی نام، شماره یا کلاس">
+            </div>
+            <div id="adminStudentMsg" class="notice hidden"></div>
+            <div class="table-wrap"><table><thead><tr><th>نام هنرجو</th><th>شماره</th><th>کلاس</th><th>شناسه حساب</th><th>عملیات</th></tr></thead><tbody id="adminStudentsBody"><tr><td colspan="5" class="empty">در حال بارگذاری…</td></tr></tbody></table></div>
+          </div>
+        </section>
+
+        <section class="panel glass admin-panel-card">
+          <div class="panel-header"><div><h3>مدیریت حساب‌های سامانه</h3><p>نقش حساب‌های موجود را تعیین کن. ابتدا کاربر باید در Supabase Authentication ساخته شده باشد.</p></div><span class="pill">مدیریت نقش‌ها</span></div>
+          <div class="panel-body">
+            <div class="admin-form-grid">
+              <div class="field"><label for="adminProfileUserId">شناسه کاربر Auth</label><input id="adminProfileUserId" placeholder="UUID کاربر در Authentication"></div>
+              <div class="field"><label for="adminProfileName">نام نمایشی</label><input id="adminProfileName" placeholder="نام و نام خانوادگی"></div>
+              <div class="field"><label for="adminProfileRole">نقش</label><select id="adminProfileRole"><option value="student">دانش‌آموز</option><option value="teacher">معلم</option><option value="admin">مدیر</option></select></div>
+            </div>
+            <div class="admin-actions"><button id="adminProfileCreate" class="btn btn-primary" type="button">ایجاد پروفایل برای حساب موجود</button><input id="adminProfileSearch" class="admin-search" placeholder="جست‌وجوی نام یا شناسه حساب"></div>
+            <div id="adminProfileMsg" class="notice hidden"></div>
+            <div class="table-wrap"><table><thead><tr><th>نام</th><th>شناسه حساب</th><th>نقش</th><th>تغییر نقش</th></tr></thead><tbody id="adminProfilesBody"><tr><td colspan="4" class="empty">در حال بارگذاری…</td></tr></tbody></table></div>
+            <p class="admin-hint">ساخت حساب ورود و تعیین رمز عبور از داخل مرورگر انجام نمی‌شود؛ برای ساخت حساب جدید از بخش Authentication در Supabase استفاده کن، سپس شناسه آن را اینجا ثبت کن.</p>
+          </div>
+        </section>
+
+        <section class="panel glass admin-panel-card">
+          <div class="panel-header"><div><h3>آخرین سوابق حضور و غیاب</h3><p>نمای کلی سوابق ثبت‌شده در مدرسه</p></div><button id="adminRefresh" class="btn btn-secondary" type="button">به‌روزرسانی</button></div>
+          <div class="panel-body">
+            <div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>هنرجو</th><th>کلاس</th><th>وضعیت</th><th>توضیحات</th></tr></thead><tbody id="adminAttendanceBody"><tr><td colspan="5" class="empty">در حال بارگذاری…</td></tr></tbody></table></div>
+            <p class="admin-hint">برای حفظ سرعت، حداکثر ۱۰۰۰ سابقه اخیر در این نمای مدیریتی دریافت می‌شود.</p>
+          </div>
+        </section>
+      </section>
     </div>
   </main>
 </section>
@@ -500,6 +575,7 @@ const names={present:'حاضر',absent:'غایب',late:'با تأخیر',excused
 const digits=n=>Number(n).toLocaleString('fa-IR');
 const nowDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 let user=null,profile=null,students=[],draft=new Map(),dirty=false,toastTimer=null,lastLoadedDate=null,currentStudent=null;
+let adminStudents=[],adminProfiles=[],adminAttendance=[];
 let qrStream=null,qrScanActive=false,qrFrameHandle=null,qrLastValue='',qrLastAt=0;
 $('attendanceDate').value=nowDate();
 initReportDates();
@@ -507,7 +583,7 @@ $('todayLabel').textContent=new Intl.DateTimeFormat('fa-IR',{dateStyle:'full'}).
 function message(id,text,type=''){const el=$(id);el.textContent=text;el.className='notice'+(type?' '+type:'');el.classList.remove('hidden')}
 function hide(id){$(id).classList.add('hidden')}
 function toast(text,type=''){const el=$('toast');el.textContent=text;el.className='toast'+(type?' '+type:'');el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),5000)}
-function showLogin(){user=null;profile=null;students=[];draft.clear();dirty=false;$('loginScreen').classList.remove('hidden');$('appShell').classList.add('hidden');$('teacherPanel').classList.add('hidden');$('studentPanel').classList.add('hidden');$('password').value=''}
+function showLogin(){user=null;profile=null;students=[];draft.clear();dirty=false;$('loginScreen').classList.remove('hidden');$('appShell').classList.add('hidden');$('teacherPanel').classList.add('hidden');$('studentPanel').classList.add('hidden');$('adminPanel').classList.add('hidden');$('password').value=''}
 async function login(){
   const username=$('username').value.trim(),password=$('password').value;
   if(!username||!password){message('loginMsg','نام کاربری و رمز عبور را وارد کنید.','error');return}
@@ -521,12 +597,22 @@ async function openApp(){
   const {data,error}=await client.from('profiles').select('id,full_name,role').eq('id',user.id).maybeSingle();
   if(error||!data){await client.auth.signOut();user=null;message('loginMsg','پروفایل این حساب پیدا نشد. مدیر سامانه باید جدول profiles را بررسی کند.','error');return}
   profile=data;
-  if(!['teacher','student'].includes(profile.role)){await client.auth.signOut();user=null;message('loginMsg','نقش این حساب معتبر نیست.','error');return}
+  if(!['teacher','student','admin'].includes(profile.role)){await client.auth.signOut();user=null;message('loginMsg','نقش این حساب معتبر نیست.','error');return}
   $('loginScreen').classList.add('hidden');$('appShell').classList.remove('hidden');
-  $('userName').textContent=profile.full_name||'کاربر';$('userRole').textContent=profile.role==='teacher'?'معلم':'دانش‌آموز';
+  $('teacherPanel').classList.add('hidden');$('studentPanel').classList.add('hidden');$('adminPanel').classList.add('hidden');
+  $('userName').textContent=profile.full_name||'کاربر';
+  $('userRole').textContent=profile.role==='teacher'?'معلم':profile.role==='student'?'دانش‌آموز':'مدیر مدرسه';
   $('greeting').textContent='سلام، '+(profile.full_name||'خوش آمدید')+' 👋';
-  if(profile.role==='teacher'){$('welcomeText').textContent='حضور و غیاب امروز کلاس را با دقت مدیریت کن.';$('teacherPanel').classList.remove('hidden');$('studentPanel').classList.add('hidden');await loadTeacher()}
-  else{$('welcomeText').textContent='سوابق و عملکرد حضور خودت را در یک نگاه ببین.';$('teacherPanel').classList.add('hidden');$('studentPanel').classList.remove('hidden');await loadStudent()}
+  if(profile.role==='teacher'){
+    $('welcomeText').textContent='حضور و غیاب امروز کلاس را با دقت مدیریت کن.';
+    $('teacherPanel').classList.remove('hidden');await loadTeacher();
+  }else if(profile.role==='student'){
+    $('welcomeText').textContent='سوابق و عملکرد حضور خودت را در یک نگاه ببین.';
+    $('studentPanel').classList.remove('hidden');await loadStudent();
+  }else{
+    $('welcomeText').textContent='مدیریت هنرجویان، حساب‌ها و سوابق مدرسه در یک پنل.';
+    $('adminPanel').classList.remove('hidden');await loadAdmin();
+  }
 }
 async function logout(){const {error}=await client.auth.signOut();if(error){toast('خروج انجام نشد. دوباره امتحان کن.','error');return}showLogin()}
 function getStats(){const arr=[...draft.values()];return {total:students.length,present:arr.filter(x=>x.status==='present').length,absent:arr.filter(x=>x.status==='absent').length,other:arr.filter(x=>x.status==='late'||x.status==='excused').length}}
@@ -658,6 +744,115 @@ async function loadStudent(){
   const colors={present:'#63d7c7',absent:'#ff849e',late:'#ffbe7c',excused:'#9198ff'};
   $('myAttendance').innerHTML=a.length?a.map(r=>`<tr><td>${esc(r.attendance_date)}</td><td><span class="status-pill" style="--st-color:${colors[r.status]||'#9fc5ff'}">${esc(names[r.status]||r.status)}</span></td><td>${esc(r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>'
 }
+
+async function loadAdmin(){
+  if(profile?.role!=='admin')return;
+  message('adminStudentMsg','در حال دریافت اطلاعات مدیریتی از Supabase...');
+  try{
+    const [sr,pr,ar]=await Promise.all([
+      client.from('students').select('id,student_number,full_name,class_name,user_id').order('full_name').limit(2000),
+      client.from('profiles').select('id,full_name,role').order('full_name').limit(2000),
+      client.from('attendance').select('student_id,attendance_date,status,note').order('attendance_date',{ascending:false}).limit(1000)
+    ]);
+    if(sr.error)throw new Error('خواندن هنرجویان: '+sr.error.message);
+    if(pr.error)throw new Error('خواندن حساب‌ها: '+pr.error.message);
+    if(ar.error)throw new Error('خواندن سوابق حضور: '+ar.error.message);
+    adminStudents=sr.data||[];adminProfiles=pr.data||[];adminAttendance=ar.data||[];
+    $('adminStudentCount').textContent=digits(adminStudents.length);
+    $('adminTeacherCount').textContent=digits(adminProfiles.filter(p=>p.role==='teacher').length);
+    $('adminClassCount').textContent=digits(new Set(adminStudents.map(s=>(s.class_name||'').trim()).filter(Boolean)).size);
+    $('adminAttendanceCount').textContent=digits(adminAttendance.length);
+    renderAdminStudents();renderAdminProfiles();renderAdminAttendance();
+    hide('adminStudentMsg');
+  }catch(e){
+    message('adminStudentMsg','بارگذاری پنل مدیریت انجام نشد: '+e.message,'error');
+  }
+}
+function resetAdminStudentForm(){
+  $('adminStudentId').value='';$('adminStudentName').value='';$('adminStudentNumber').value='';
+  $('adminStudentClass').value='';$('adminStudentUserId').value='';
+  $('adminStudentSave').textContent='ذخیره هنرجو';
+}
+function renderAdminStudents(){
+  const q=$('adminStudentSearch').value.trim().toLowerCase();
+  const rows=adminStudents.filter(s=>[s.full_name,s.student_number,s.class_name,s.user_id].some(v=>String(v||'').toLowerCase().includes(q)));
+  $('adminStudentsBody').innerHTML=rows.length?rows.map(s=>`<tr>
+    <td><b>${esc(s.full_name||'—')}</b></td><td>${esc(s.student_number||'—')}</td><td>${esc(s.class_name||'—')}</td>
+    <td><span class="admin-id">${esc(s.user_id||'متصل نشده')}</span></td>
+    <td><div class="admin-table-actions"><button class="admin-mini-btn" type="button" data-admin-edit-student="${esc(s.id)}">ویرایش</button><button class="admin-mini-btn danger" type="button" data-admin-delete-student="${esc(s.id)}">حذف</button></div></td>
+  </tr>`).join(''):'<tr><td colspan="5" class="empty">هنرجویی پیدا نشد.</td></tr>';
+}
+function renderAdminProfiles(){
+  const q=$('adminProfileSearch').value.trim().toLowerCase();
+  const rows=adminProfiles.filter(p=>[p.full_name,p.id,p.role].some(v=>String(v||'').toLowerCase().includes(q)));
+  const labels={admin:'مدیر',teacher:'معلم',student:'دانش‌آموز'};
+  $('adminProfilesBody').innerHTML=rows.length?rows.map(p=>`<tr>
+    <td><b>${esc(p.full_name||'—')}</b></td><td><span class="admin-id">${esc(p.id)}</span></td>
+    <td><span class="admin-status">${labels[p.role]||esc(p.role)}</span></td>
+    <td><select class="admin-role-select" data-admin-role="${esc(p.id)}" ${p.id===user?.id?'disabled title="برای جلوگیری از قفل‌شدن پنل، نقش مدیر فعلی از اینجا تغییر نمی‌کند."':''}>
+      <option value="student" ${p.role==='student'?'selected':''}>دانش‌آموز</option>
+      <option value="teacher" ${p.role==='teacher'?'selected':''}>معلم</option>
+      <option value="admin" ${p.role==='admin'?'selected':''}>مدیر</option>
+    </select></td>
+  </tr>`).join(''):'<tr><td colspan="4" class="empty">حسابی پیدا نشد.</td></tr>';
+}
+function renderAdminAttendance(){
+  const map=new Map(adminStudents.map(s=>[String(s.id),s]));
+  const rows=adminAttendance.slice(0,100);
+  $('adminAttendanceBody').innerHTML=rows.length?rows.map(r=>{
+    const s=map.get(String(r.student_id))||{};
+    return `<tr><td>${esc(formatReportDate(r.attendance_date))}</td><td>${esc(s.full_name||'هنرجوی حذف‌شده/نامشخص')}</td><td>${esc(s.class_name||'—')}</td><td><span class="status-pill">${esc(names[r.status]||r.status||'—')}</span></td><td>${esc(r.note||'—')}</td></tr>`;
+  }).join(''):'<tr><td colspan="5" class="empty">سابقه‌ای ثبت نشده است.</td></tr>';
+}
+async function saveAdminStudent(){
+  if(profile?.role!=='admin')return;
+  const id=$('adminStudentId').value;
+  const full_name=$('adminStudentName').value.trim();
+  const student_number=$('adminStudentNumber').value.trim();
+  const class_name=$('adminStudentClass').value.trim();
+  const user_id=$('adminStudentUserId').value.trim()||null;
+  if(!full_name||!student_number){message('adminStudentMsg','نام هنرجو و شماره هنرجویی الزامی است.','error');return}
+  const payload={full_name,student_number,class_name:class_name||null,user_id};
+  $('adminStudentSave').disabled=true;
+  try{
+    const result=id
+      ? await client.from('students').update(payload).eq('id',id)
+      : await client.from('students').insert(payload);
+    if(result.error)throw result.error;
+    message('adminStudentMsg',id?'اطلاعات هنرجو ویرایش شد.':'هنرجوی جدید به فهرست اضافه شد.','success');
+    resetAdminStudentForm();await loadAdmin();
+  }catch(e){message('adminStudentMsg','ذخیره هنرجو انجام نشد: '+e.message,'error')}
+  finally{$('adminStudentSave').disabled=false}
+}
+async function deleteAdminStudent(id){
+  if(profile?.role!=='admin'||!confirm('هنرجو حذف شود؟ اگر برای او سابقه حضور ثبت شده باشد، ممکن است پایگاه داده حذف را به‌دلیل ارتباط سوابق رد کند.'))return;
+  try{
+    const {error}=await client.from('students').delete().eq('id',id);
+    if(error)throw error;
+    toast('رکورد هنرجو حذف شد.');resetAdminStudentForm();await loadAdmin();
+  }catch(e){message('adminStudentMsg','حذف انجام نشد: '+e.message,'error')}
+}
+async function createAdminProfile(){
+  if(profile?.role!=='admin')return;
+  const id=$('adminProfileUserId').value.trim(),full_name=$('adminProfileName').value.trim(),role=$('adminProfileRole').value;
+  if(!id||!full_name){message('adminProfileMsg','شناسه Auth و نام نمایشی را وارد کن.','error');return}
+  try{
+    const {error}=await client.from('profiles').insert({id,full_name,role});
+    if(error)throw error;
+    $('adminProfileUserId').value='';$('adminProfileName').value='';
+    message('adminProfileMsg','پروفایل برای حساب موجود ساخته شد.','success');await loadAdmin();
+  }catch(e){message('adminProfileMsg','ساخت پروفایل انجام نشد: '+e.message,'error')}
+}
+async function changeAdminRole(id,role){
+  if(profile?.role!=='admin'||id===user.id)return;
+  if(!confirm('نقش این حساب به "'+({admin:'مدیر',teacher:'معلم',student:'دانش‌آموز'}[role]||role)+'" تغییر کند؟')){renderAdminProfiles();return}
+  try{
+    const {error}=await client.from('profiles').update({role}).eq('id',id);
+    if(error)throw error;
+    toast('نقش حساب به‌روزرسانی شد.');await loadAdmin();
+  }catch(e){message('adminProfileMsg','تغییر نقش انجام نشد: '+e.message,'error');renderAdminProfiles()}
+}
+
 function renderStudentQR(student){
   const target=$('studentQr');target.innerHTML='';
   if(!window.QRCode){target.textContent='کتابخانه QR بارگذاری نشد.';return}
@@ -716,6 +911,29 @@ $('studentReportMonth').addEventListener('click',()=>setReportRange('studentRepo
 document.addEventListener('click',e=>{
   const print=e.target.closest('[data-report-print]');if(print){printReport(print.dataset.reportPrint);return}
   const close=e.target.closest('[data-report-close]');if(close)closeReport(close.dataset.reportClose);
+});
+
+
+$('adminStudentSave').addEventListener('click',saveAdminStudent);
+$('adminStudentCancel').addEventListener('click',resetAdminStudentForm);
+$('adminStudentSearch').addEventListener('input',renderAdminStudents);
+$('adminProfileSearch').addEventListener('input',renderAdminProfiles);
+$('adminProfileCreate').addEventListener('click',createAdminProfile);
+$('adminRefresh').addEventListener('click',loadAdmin);
+$('adminStudentsBody').addEventListener('click',e=>{
+  const edit=e.target.closest('[data-admin-edit-student]');
+  const del=e.target.closest('[data-admin-delete-student]');
+  if(edit){
+    const s=adminStudents.find(x=>String(x.id)===edit.dataset.adminEditStudent);if(!s)return;
+    $('adminStudentId').value=s.id;$('adminStudentName').value=s.full_name||'';
+    $('adminStudentNumber').value=s.student_number||'';$('adminStudentClass').value=s.class_name||'';
+    $('adminStudentUserId').value=s.user_id||'';$('adminStudentSave').textContent='ذخیره ویرایش';
+    $('adminStudentName').focus();return;
+  }
+  if(del)deleteAdminStudent(del.dataset.adminDeleteStudent);
+});
+$('adminProfilesBody').addEventListener('change',e=>{
+  const select=e.target.closest('[data-admin-role]');if(select)changeAdminRole(select.dataset.adminRole,select.value);
 });
 
 client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session?.user){user=data.session.user;try{await openApp()}catch(e){message('loginMsg','خطا در بازکردن پنل. صفحه را تازه کن.','error')}}});
