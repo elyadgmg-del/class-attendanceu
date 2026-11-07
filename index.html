@@ -3,14 +3,6 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a1024">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="هنرستان سما">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-<meta name="theme-color" content="#0a1024">
 <title>هنرستان سما | سامانه حضور و غیاب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -116,12 +108,8 @@
 @media print{body *{visibility:hidden}.qr-card,.qr-card *{visibility:visible}.qr-card{position:absolute;inset:0;background:white;color:#111;border:0;box-shadow:none}.qr-card p{color:#333}}
 
 
-/* PWA install controls */
-.install-app-btn{width:100%;margin-top:12px;border-color:rgba(119,184,255,.28);background:linear-gradient(110deg,rgba(119,184,255,.13),rgba(122,119,255,.12));color:#dceaff}
-.install-app-btn:hover{background:linear-gradient(110deg,rgba(119,184,255,.22),rgba(122,119,255,.20))}
-.install-app-top{width:auto;margin:0;min-height:40px;padding:8px 12px;font-size:11px}
-@media(max-width:720px){.install-app-top span{display:none}.install-app-top{width:40px;padding:8px;min-width:40px}.top-actions{gap:6px}}
-@media(min-width:721px){.install-app-top{display:inline-flex}}
+/* Student grades */
+.grade-book-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}.grade-book{padding:17px;border:1px solid var(--stroke);border-radius:17px;background:rgba(255,255,255,.035);cursor:pointer;text-align:right;color:var(--white);transition:.2s}.grade-book:hover{transform:translateY(-2px);border-color:rgba(119,184,255,.45);background:rgba(119,184,255,.08)}.grade-book b{display:block;font-size:12px;margin:8px 0}.grade-book small{color:var(--soft);font-size:10px}.grade-modal{position:fixed;inset:0;z-index:80;background:rgba(2,7,20,.82);backdrop-filter:blur(12px);display:grid;place-items:center;padding:18px;overflow:auto}.grade-dialog{width:min(900px,100%);max-height:92vh;overflow:auto;padding:22px;border-radius:23px}.grade-form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.grade-table-wrap{overflow:auto;margin-top:18px}.grade-student-link{border:0;background:none;color:#b8dcff;font:inherit;font-weight:800;cursor:pointer;text-align:right}.grade-student-link:hover{text-decoration:underline}@media(max-width:720px){.grade-form-grid{grid-template-columns:1fr 1fr}.grade-dialog{padding:15px}}
 </style>
 <style>
 /* SAMA Aurora Glass — visual enhancement for the existing attendance app.
@@ -379,6 +367,7 @@ th,td {border-color:rgba(202,223,255,.12);}
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h14a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2V4Zm0 12c1-1 2.4-1 3 0h13M8 8h8"/></symbol>
 <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol>
 </defs></svg>
+<div id="gradeModal" class="grade-modal hidden" role="dialog" aria-modal="true" aria-labelledby="gradeModalTitle"><div class="grade-dialog glass"><div class="panel-header" style="padding:0 0 16px"><div><h3 id="gradeModalTitle">کارنامه دانش‌آموز</h3><p id="gradeModalSubtitle">ثبت چندین نمره برای هر درس</p></div><button id="gradeModalClose" class="btn btn-secondary" type="button">بستن ✕</button></div><div class="panel-body" style="padding:0"><div class="grade-form-grid"><div class="field"><label for="gradeSubject">درس / کتاب</label><select id="gradeSubject"></select></div><div class="field"><label for="gradeValue">نمره (۰ تا ۲۰)</label><input id="gradeValue" type="number" min="0" max="20" step="0.25" placeholder="مثلاً ۱۸٫۵"></div><div class="field"><label for="gradeDate">تاریخ</label><input id="gradeDate" type="date"></div><div class="field"><label for="gradeType">نوع ارزشیابی</label><select id="gradeType"><option>مستمر</option><option>پایان پودمان</option><option>میان‌ترم</option><option>پایان‌ترم</option><option>عملی</option><option>پروژه</option><option>شفاهی</option></select></div></div><div class="field" style="margin-top:12px"><label for="gradeNote">توضیحات (اختیاری)</label><input id="gradeNote" placeholder="مثلاً آزمون فصل دوم یا پودمان سوم"></div><div class="admin-actions"><button id="gradeSave" class="btn btn-primary" type="button">ثبت نمره</button><button id="gradeCancelEdit" class="btn btn-secondary hidden" type="button">لغو ویرایش</button></div><div id="gradeMsg" class="notice hidden"></div><div class="grade-table-wrap"><table><thead><tr><th>درس</th><th>نمره</th><th>تاریخ</th><th>نوع ارزشیابی</th><th>توضیحات</th><th>عملیات</th></tr></thead><tbody id="gradesBody"><tr><td colspan="6" class="empty">در حال بارگذاری…</td></tr></tbody></table></div></div></div></div>
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
 <section id="loginScreen" class="login">
@@ -392,9 +381,6 @@ th,td {border-color:rgba(202,223,255,.12);}
         <div class="field"><label for="username">نام کاربری یا ایمیل</label><input id="username" autocomplete="username" placeholder="مثلاً student22 یا ایمیل معلم" /></div>
         <div class="field"><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" placeholder="رمز عبور حساب" /></div>
         <button id="loginBtn" class="btn btn-primary" type="button">ورود به داشبورد <svg class="icon"><use href="#i-out"/></svg></button>
-        <button id="installAppBtn" class="btn btn-secondary install-app-btn" type="button">
-          <svg class="icon"><use href="#i-download"/></svg> نصب اپلیکیشن سما
-        </button>
       </div>
       <div id="loginMsg" class="notice hidden" style="margin-top:18px"></div>
       <div class="login-security"><span><i class="status-glow"></i> اتصال امن به سامانه</span><span>پنل معلم و دانش‌آموز</span></div>
@@ -430,7 +416,7 @@ th,td {border-color:rgba(202,223,255,.12);}
     <div class="sidebar-bottom"><div class="school-info"><b>✦ هنرستان سما</b><p>نسخه تازه با طراحی اختصاصی و اتصال به سامانه اصلی حضور و غیاب.</p></div></div>
   </aside>
   <main class="main">
-    <header class="topbar"><div><h1>داشبورد هنرستان سما</h1><p>سامانه هوشمند حضور و غیاب</p></div><div class="top-actions"><button id="installAppBtnTop" class="btn btn-secondary install-app-btn install-app-top" type="button" title="نصب اپلیکیشن سما"><svg class="icon"><use href="#i-download"/></svg><span>نصب اپلیکیشن</span></button><div class="user-chip"><span class="avatar">س</span><span><b id="userName">کاربر</b><small id="userRole">حساب</small></span></div><button id="logoutBtn" class="icon-button" type="button" aria-label="خروج از حساب" title="خروج"><svg class="icon"><use href="#i-out"/></svg></button></div></header>
+    <header class="topbar"><div><h1>داشبورد هنرستان سما</h1><p>سامانه هوشمند حضور و غیاب</p></div><div class="top-actions"><div class="user-chip"><span class="avatar">س</span><span><b id="userName">کاربر</b><small id="userRole">حساب</small></span></div><button id="logoutBtn" class="icon-button" type="button" aria-label="خروج از حساب" title="خروج"><svg class="icon"><use href="#i-out"/></svg></button></div></header>
     <div class="content">
       <section class="dash-hero"><div><div class="kicker">✦ یک روز تازه در سما</div><h2 id="greeting">سلام، خوش آمدید 👋</h2><p id="welcomeText">به سامانه خوش آمدید.</p></div><div class="date-badge"><svg class="icon"><use href="#i-calendar"/></svg><span id="todayLabel">امروز</span></div></section>
       <section id="teacherPanel" class="hidden">
@@ -500,6 +486,11 @@ th,td {border-color:rgba(202,223,255,.12);}
           <section class="panel glass"><div class="panel-header"><div><h3>کارنامه حضور و غیاب من</h3><p id="studentInfo">سوابق شخصی حساب شما</p></div><span class="pill">پنل دانش‌آموز</span></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>وضعیت</th><th>توضیحات</th></tr></thead><tbody id="myAttendance"><tr><td colspan="3" class="empty">در حال بارگذاری…</td></tr></tbody></table></div></div></section>
           <aside class="side-panel glass"><h3>روند حضور من</h3><p class="explainer">آمار شخصی از روزهایی که حضور و غیاب برای آن‌ها ثبت شده است.</p><div class="ring" id="studentRing" style="--ring:0deg"><div class="ring-inner"><strong id="studentRingRate">۰٪</strong><span>حضور</span></div></div><div class="progress-track"><span id="studentProgress" style="width:0%"></span></div><div class="side-tip">سوابق این بخش فقط متعلق به حساب دانش‌آموز واردشده است. تغییر سوابق فقط در اختیار معلم قرار دارد.</div></aside>
         </div>
+
+        <section class="panel glass" style="margin-top:20px">
+          <div class="panel-header"><div><h3>نمرات و کارنامه درسی من</h3><p>نمرات هر درس به تفکیک تاریخ و نوع ارزشیابی</p></div><span class="pill">کارنامه آموزشی</span></div>
+          <div class="panel-body"><div id="myGrades" class="grade-book-grid"><div class="empty">در حال بارگذاری نمرات…</div></div></div>
+        </section>
 
         <section class="panel glass" style="margin-top:20px">
           <div class="panel-header"><div><h3>دریافت کارنامه شخصی</h3><p>سوابق خودت را در بازه دلخواه ببین و برای چاپ یا ذخیره PDF آماده کن.</p></div><span class="pill">گزارش دانش‌آموز</span></div>
@@ -594,6 +585,14 @@ const digits=n=>Number(n).toLocaleString('fa-IR');
 const nowDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 let user=null,profile=null,students=[],draft=new Map(),dirty=false,toastTimer=null,lastLoadedDate=null,currentStudent=null;
 let adminStudents=[],adminProfiles=[],adminAttendance=[];
+let gradeStudent=null,studentGrades=[],editingGradeId=null;
+const gradeBooks={
+ 'دهم':['دانش فنی پایه','نگهداری سیستم‌های رایانه‌ای','ارائه‌دهنده خدمات رایانه‌ای','نقشه‌کشی فنی رایانه‌ای','همراه هنرجو','ریاضی ۱','فیزیک','هوش مصنوعی'],
+ 'یازدهم':['تولید محتوای رایانه‌ای','طراح سایت','شیمی','کاربرد فناوری‌های نوین'],
+ 'دوازدهم':['دانش فنی تخصصی','نصب و نگهداری تجهیزات شبکه و سخت‌افزار','تجارت الکترونیک و امنیت شبکه','ریاضی ۳']
+};
+function gradeLevel(className=''){const t=String(className);return Object.keys(gradeBooks).find(g=>t.includes(g))||'دهم'}
+
 let qrStream=null,qrScanActive=false,qrFrameHandle=null,qrLastValue='',qrLastAt=0;
 $('attendanceDate').value=nowDate();
 initReportDates();
@@ -760,8 +759,18 @@ async function loadStudent(){
   const a=rows||[],pres=a.filter(x=>x.status==='present').length,abs=a.filter(x=>x.status==='absent').length,rate=a.length?Math.round(pres/a.length*100):0;
   $('daysCount').textContent=digits(a.length);$('myPresent').textContent=digits(pres);$('myAbsent').textContent=digits(abs);$('attendanceRate').textContent=digits(rate)+'٪';$('studentRingRate').textContent=digits(rate)+'٪';$('studentRing').style.setProperty('--ring',rate*3.6+'deg');$('studentProgress').style.width=rate+'%';
   const colors={present:'#63d7c7',absent:'#ff849e',late:'#ffbe7c',excused:'#9198ff'};
-  $('myAttendance').innerHTML=a.length?a.map(r=>`<tr><td>${esc(r.attendance_date)}</td><td><span class="status-pill" style="--st-color:${colors[r.status]||'#9fc5ff'}">${esc(names[r.status]||r.status)}</span></td><td>${esc(r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>'
+  $('myAttendance').innerHTML=a.length?a.map(r=>`<tr><td>${esc(r.attendance_date)}</td><td><span class="status-pill" style="--st-color:${colors[r.status]||'#9fc5ff'}">${esc(names[r.status]||r.status)}</span></td><td>${esc(r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">هنوز سابقه‌ای ثبت نشده است.</td></tr>';
+  await loadMyGrades(student.id)
 }
+
+function gradeSubjectOptions(level,selected=''){const arr=gradeBooks[level]||gradeBooks['دهم'];$('gradeSubject').innerHTML=arr.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(x)}</option>`).join('')+'<option value="سایر درس‌ها">سایر درس‌ها</option>'; }
+function openGradeModal(student){gradeStudent=student;editingGradeId=null;$('gradeModalTitle').textContent='کارنامه درسی '+(student.full_name||'دانش‌آموز');$('gradeModalSubtitle').textContent=(student.class_name||'پایه نامشخص')+' · ثبت چند نمره برای هر درس';gradeSubjectOptions(gradeLevel(student.class_name));$('gradeValue').value='';$('gradeDate').value=nowDate();$('gradeType').value='مستمر';$('gradeNote').value='';$('gradeSave').textContent='ثبت نمره';$('gradeCancelEdit').classList.add('hidden');hide('gradeMsg');$('gradeModal').classList.remove('hidden');loadStudentGradesForAdmin();}
+async function loadStudentGradesForAdmin(){if(!gradeStudent)return;$('gradesBody').innerHTML='<tr><td colspan="6" class="empty">در حال دریافت…</td></tr>';try{const {data,error}=await client.from('student_grades').select('id,subject,grade,exam_date,assessment_type,note').eq('student_id',gradeStudent.id).order('exam_date',{ascending:false});if(error)throw error;studentGrades=data||[];renderGradeRows();}catch(e){$('gradesBody').innerHTML=`<tr><td colspan="6" class="empty">${esc(e.message)} · ابتدا دستور SQL همراه بسته را در Supabase اجرا کنید.</td></tr>`;}}
+function renderGradeRows(){$('gradesBody').innerHTML=studentGrades.length?studentGrades.map(g=>`<tr><td>${esc(g.subject)}</td><td><b>${esc(g.grade)}</b></td><td>${esc(g.exam_date||'—')}</td><td>${esc(g.assessment_type||'—')}</td><td>${esc(g.note||'—')}</td><td><div class="admin-table-actions"><button class="admin-mini-btn" data-grade-edit="${esc(g.id)}" type="button">ویرایش</button><button class="admin-mini-btn danger" data-grade-delete="${esc(g.id)}" type="button">حذف</button></div></td></tr>`).join(''):'<tr><td colspan="6" class="empty">هنوز نمره‌ای برای این دانش‌آموز ثبت نشده است.</td></tr>';}
+function resetGradeForm(){editingGradeId=null;$('gradeValue').value='';$('gradeDate').value=nowDate();$('gradeType').value='مستمر';$('gradeNote').value='';$('gradeSave').textContent='ثبت نمره';$('gradeCancelEdit').classList.add('hidden');}
+async function saveStudentGrade(){if(!gradeStudent)return;const grade=Number($('gradeValue').value),subject=$('gradeSubject').value,date=$('gradeDate').value;if(!subject||!date||!Number.isFinite(grade)||grade<0||grade>20){message('gradeMsg','درس، تاریخ و نمره معتبر بین صفر تا ۲۰ را وارد کنید.','error');return;}const payload={student_id:gradeStudent.id,subject,grade,exam_date:date,assessment_type:$('gradeType').value,note:$('gradeNote').value.trim(),created_by:user.id};try{const q=editingGradeId?client.from('student_grades').update(payload).eq('id',editingGradeId):client.from('student_grades').insert(payload);const {error}=await q;if(error)throw error;toast(editingGradeId?'نمره ویرایش شد.':'نمره ثبت شد.');resetGradeForm();hide('gradeMsg');await loadStudentGradesForAdmin();}catch(e){message('gradeMsg','ذخیره نمره انجام نشد: '+e.message,'error');}}
+async function deleteStudentGrade(id){if(!confirm('این نمره حذف شود؟'))return;try{const {error}=await client.from('student_grades').delete().eq('id',id);if(error)throw error;toast('نمره حذف شد.');await loadStudentGradesForAdmin();}catch(e){message('gradeMsg','حذف نمره انجام نشد: '+e.message,'error');}}
+async function loadMyGrades(studentId){const host=$('myGrades');host.innerHTML='<div class="empty">در حال بارگذاری…</div>';try{const {data,error}=await client.from('student_grades').select('subject,grade,exam_date,assessment_type,note').eq('student_id',studentId).order('exam_date',{ascending:false});if(error)throw error;const rows=data||[];const subjects=[...new Set(rows.map(r=>r.subject))];host.innerHTML=subjects.length?subjects.map(sub=>{const a=rows.filter(r=>r.subject===sub),avg=a.reduce((n,r)=>n+Number(r.grade),0)/a.length;return `<article class="grade-book"><div style="display:flex;justify-content:space-between;gap:8px"><span>📘</span><small>${a.length} نمره</small></div><b>${esc(sub)}</b><small>میانگین: ${avg.toFixed(2)} از ۲۰</small><div style="margin-top:12px;border-top:1px solid var(--stroke);padding-top:9px">${a.map(r=>`<div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;padding:5px 0"><span>${esc(r.assessment_type||'ارزشیابی')}</span><strong>${esc(r.grade)} · ${esc(r.exam_date||'')}</strong></div>`).join('')}</div></article>`}).join(''):'<div class="empty">هنوز نمره‌ای برای شما ثبت نشده است.</div>';}catch(e){host.innerHTML=`<div class="notice">نمایش نمرات ممکن نیست: ${esc(e.message)}. در صورت نیاز مدیر باید SQL قابلیت نمرات را اجرا کند.</div>`;}}
 
 async function loadAdmin(){
   if(profile?.role!=='admin')return;
@@ -795,7 +804,7 @@ function renderAdminStudents(){
   const q=$('adminStudentSearch').value.trim().toLowerCase();
   const rows=adminStudents.filter(s=>[s.full_name,s.student_number,s.class_name,s.user_id].some(v=>String(v||'').toLowerCase().includes(q)));
   $('adminStudentsBody').innerHTML=rows.length?rows.map(s=>`<tr>
-    <td><b>${esc(s.full_name||'—')}</b></td><td>${esc(s.student_number||'—')}</td><td>${esc(s.class_name||'—')}</td>
+    <td><button class="grade-student-link" type="button" data-grade-student="${esc(s.id)}">${esc(s.full_name||'—')}</button></td><td>${esc(s.student_number||'—')}</td><td>${esc(s.class_name||'—')}</td>
     <td><span class="admin-id">${esc(s.user_id||'متصل نشده')}</span></td>
     <td><div class="admin-table-actions"><button class="admin-mini-btn" type="button" data-admin-edit-student="${esc(s.id)}">ویرایش</button><button class="admin-mini-btn danger" type="button" data-admin-delete-student="${esc(s.id)}">حذف</button></div></td>
   </tr>`).join(''):'<tr><td colspan="5" class="empty">هنرجویی پیدا نشد.</td></tr>';
@@ -954,65 +963,9 @@ $('adminProfilesBody').addEventListener('change',e=>{
   const select=e.target.closest('[data-admin-role]');if(select)changeAdminRole(select.dataset.adminRole,select.value);
 });
 
+$('adminStudentsBody').addEventListener('click',e=>{const b=e.target.closest('[data-grade-student]');if(b){const st=adminStudents.find(x=>String(x.id)===b.dataset.gradeStudent);if(st)openGradeModal(st);}});
+$('studentsBody').addEventListener('click',e=>{const b=e.target.closest('[data-grade-student]');if(b){const st=students.find(x=>String(x.id)===b.dataset.gradeStudent);if(st)openGradeModal(st);}});
+$('gradeSave').addEventListener('click',saveStudentGrade);$('gradeCancelEdit').addEventListener('click',resetGradeForm);$('gradeModalClose').addEventListener('click',()=>$('gradeModal').classList.add('hidden'));$('gradeModal').addEventListener('click',e=>{if(e.target.id==='gradeModal')$('gradeModal').classList.add('hidden');});$('gradesBody').addEventListener('click',e=>{const ed=e.target.closest('[data-grade-edit]'),del=e.target.closest('[data-grade-delete]');if(ed){const g=studentGrades.find(x=>String(x.id)===ed.dataset.gradeEdit);if(!g)return;editingGradeId=g.id;gradeSubjectOptions(gradeLevel(gradeStudent?.class_name),g.subject);$('gradeValue').value=g.grade;$('gradeDate').value=g.exam_date||nowDate();$('gradeType').value=g.assessment_type||'مستمر';$('gradeNote').value=g.note||'';$('gradeSave').textContent='ذخیره ویرایش';$('gradeCancelEdit').classList.remove('hidden');}if(del)deleteStudentGrade(del.dataset.gradeDelete);});
 client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session?.user){user=data.session.user;try{await openApp()}catch(e){message('loginMsg','خطا در بازکردن پنل. صفحه را تازه کن.','error')}}});
-
-// SAMA SMART PWA: install prompt + offline app shell
-let samaDeferredInstallPrompt = null;
-const samaInstallButtons = () => [document.getElementById('installAppBtn'), document.getElementById('installAppBtnTop')].filter(Boolean);
-
-function samaIsInstalled(){
-  return window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true;
-}
-function samaSetInstallButtonState(){
-  const installed = samaIsInstalled();
-  samaInstallButtons().forEach(btn => {
-    btn.classList.toggle('hidden', installed);
-    btn.setAttribute('aria-label', 'نصب اپلیکیشن هنرستان سما');
-  });
-}
-async function samaInstallApp(){
-  if (samaDeferredInstallPrompt) {
-    const promptEvent = samaDeferredInstallPrompt;
-    samaDeferredInstallPrompt = null;
-    try {
-      await promptEvent.prompt();
-      const result = await promptEvent.userChoice;
-      if (result?.outcome === 'accepted') toast('درخواست نصب اپلیکیشن سما پذیرفته شد.');
-      else toast('نصب اپلیکیشن لغو شد.');
-    } catch (e) {
-      alert('برای نصب، از منوی مرورگر گزینه Install app یا Add to Home Screen را انتخاب کن.');
-    }
-    return;
-  }
-  const ua = navigator.userAgent || '';
-  let guide;
-  if (/iphone|ipad|ipod/i.test(ua) && !window.MSStream) {
-    guide = 'برای نصب روی آیفون: در Safari دکمه Share را بزن، سپس Add to Home Screen را انتخاب کن.';
-  } else if (/android/i.test(ua)) {
-    guide = 'برای نصب روی اندروید: منوی سه‌نقطه Chrome را باز کن و Install app یا Add to Home screen را بزن.';
-  } else {
-    guide = 'برای نصب روی لپ‌تاپ: در Chrome منوی سه‌نقطه را باز کن و گزینه Install page as app را انتخاب کن. در Edge از منوی Apps گزینه Install this site as an app را بزن.';
-  }
-  alert(guide);
-}
-samaInstallButtons().forEach(btn => btn.addEventListener('click', samaInstallApp));
-window.addEventListener('beforeinstallprompt', event => {
-  event.preventDefault();
-  samaDeferredInstallPrompt = event;
-});
-window.addEventListener('appinstalled', () => {
-  samaDeferredInstallPrompt = null;
-  samaSetInstallButtonState();
-  if (typeof toast === 'function') toast('اپلیکیشن هنرستان سما نصب شد. خوش آمدی!');
-});
-samaSetInstallButtonState();
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', {scope: './'})
-      .then(() => console.info('SAMA PWA service worker ready'))
-      .catch(err => console.warn('SAMA PWA service worker registration failed:', err));
-  });
-}
-
 </script>
 </body></html>
